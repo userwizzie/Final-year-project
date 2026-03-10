@@ -1,0 +1,182 @@
+<?php
+require_once 'includes/config.php';
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+$user_id = $_SESSION['user_id'];
+$name    = $_SESSION['name'] ?? 'User';
+
+$lost_stmt = $conn->prepare("
+    SELECT lost_id, item_name, category, date_lost, location, description, image_path
+    FROM lost_items WHERE user_id = ? ORDER BY date_lost DESC LIMIT 10
+");
+$lost_stmt->execute([$user_id]);
+$lost_items = $lost_stmt->fetchAll();
+
+$found_stmt = $conn->prepare("
+    SELECT found_id, item_name, category, date_found, location, description, image_path,
+           reward_status, reward_points
+    FROM found_items WHERE user_id = ? ORDER BY date_found DESC LIMIT 10
+");
+$found_stmt->execute([$user_id]);
+$found_items = $found_stmt->fetchAll();
+
+$claim_stmt = $conn->prepare("
+    SELECT c.claim_id, c.claim_date, c.status, f.item_name, f.found_id
+    FROM claims c JOIN found_items f ON c.found_id = f.found_id
+    WHERE c.lost_id IN (SELECT lost_id FROM lost_items WHERE user_id = ?)
+    ORDER BY c.claim_date DESC LIMIT 10
+");
+$claim_stmt->execute([$user_id]);
+$claims = $claim_stmt->fetchAll();
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard - Lost & Found</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .section-header { margin-top: 2.5rem; margin-bottom: 1rem; font-weight: bold; }
+        .card-img-top { height: 160px; object-fit: cover; border-radius: 0.375rem 0.375rem 0 0; }
+    </style>
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="dashboard.php">Lost & Found - KyU</a>
+            <div class="ms-auto">
+                <span class="text-white me-3">Welcome, <?= htmlspecialchars($name) ?></span>
+                <a href="logout.php" class="btn btn-outline-light">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2 class="mb-4">My Dashboard</h2>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-3">
+                <div class="card text-center border-danger shadow-sm">
+                    <div class="card-body">
+                        <h5>Report Lost</h5>
+                        <a href="report-lost.php" class="btn btn-danger mt-2">Report</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center border-success shadow-sm">
+                    <div class="card-body">
+                        <h5>Report Found</h5>
+                        <a href="report-found.php" class="btn btn-success mt-2">Report</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center border-primary shadow-sm">
+                    <div class="card-body">
+                        <h5>Search Items</h5>
+                        <a href="search.php" class="btn btn-primary mt-2">Search</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center border-info shadow-sm">
+                    <div class="card-body">
+                        <h5>My Claims</h5>
+                        <a href="my-claims.php" class="btn btn-info text-white mt-2">View</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4 class="section-header text-danger">My Lost Items</h4>
+        <?php if (empty($lost_items)): ?>
+            <div class="alert alert-info">No lost items reported.</div>
+        <?php else: ?>
+            <div class="row g-4">
+                <?php foreach ($lost_items as $item): ?>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card border-danger shadow-sm h-100">
+                            <?php if (!empty($item['image_path'])): ?>
+                                <img src="<?= htmlspecialchars($item['image_path']) ?>" class="card-img-top" alt="Item">
+                            <?php endif; ?>
+                            <div class="card-body">
+                                <h5><?= htmlspecialchars($item['item_name']) ?></h5>
+                                <p class="small text-muted"><?= htmlspecialchars(substr($item['description'] ?? '', 0, 100)) ?>...</p>
+                                <p><strong>Category:</strong> <?= htmlspecialchars($item['category'] ?? 'N/A') ?></p>
+                                <p><strong>Date Lost:</strong> <?= htmlspecialchars($item['date_lost'] ?? 'N/A') ?></p>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+
+        <h4 class="section-header text-success">My Found Items & Rewards</h4>
+        <?php if (empty($found_items)): ?>
+            <div class="alert alert-info">No found items reported.</div>
+        <?php else: ?>
+            <div class="row g-4">
+                <?php foreach ($found_items as $item): ?>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card border-success shadow-sm h-100">
+                            <?php if (!empty($item['image_path'])): ?>
+                                <img src="<?= htmlspecialchars($item['image_path']) ?>" class="card-img-top" alt="Item">
+                            <?php endif; ?>
+                            <div class="card-body">
+                                <h5><?= htmlspecialchars($item['item_name']) ?></h5>
+                                <p class="small text-muted"><?= htmlspecialchars(substr($item['description'] ?? '', 0, 100)) ?>...</p>
+                                <p><strong>Category:</strong> <?= htmlspecialchars($item['category'] ?? 'N/A') ?></p>
+                                <p><strong>Date Found:</strong> <?= htmlspecialchars($item['date_found'] ?? 'N/A') ?></p>
+                                
+                                <?php if ($item['reward_status'] === 'rewarded'): ?>
+                                    <div class="alert alert-success mt-3 small">
+                                        <strong>Reward Earned!</strong> <?= $item['reward_points'] ?> points
+                                    </div>
+                                <?php elseif ($item['reward_status'] === 'claimed'): ?>
+                                    <div class="alert alert-warning mt-3 small">
+                                        Claim in review...
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+
+        <h4 class="section-header text-primary">My Claims (Quick View)</h4>
+        <?php if (empty($claims)): ?>
+            <div class="alert alert-info">No claims submitted yet.</div>
+        <?php else: ?>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead><tr><th>Item</th><th>Date</th><th>Status</th></tr></thead>
+                    <tbody>
+                        <?php foreach ($claims as $claim): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($claim['item_name']) ?></td>
+                                <td><?= htmlspecialchars($claim['claim_date']) ?></td>
+                                <td>
+                                    <span class="badge <?= $claim['status'] === 'approved' ? 'bg-success' : ($claim['status'] === 'rejected' ? 'bg-danger' : 'bg-warning') ?>">
+                                        <?= ucfirst($claim['status']) ?>
+                                    </span>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+                <a href="my-claims.php" class="btn btn-sm btn-outline-primary">View Full Details</a>
+            </div>
+        <?php endif; ?>
+    </div>
+
+</body>
+</html>
