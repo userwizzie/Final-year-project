@@ -1,5 +1,6 @@
 <?php
 require_once 'includes/config.php';
+require_once 'includes/functions.php';
 
 // Protect page - must be logged in
 if (!isset($_SESSION['user_id'])) {
@@ -73,6 +74,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $success = true;
                 $message = "Found item reported successfully! Thank you for helping.";
+
+                // notify admin of new found report
+                notify_user('admin@lostfound.local', 'New found item reported',
+                            "User #{$_SESSION['user_id']} reported a new item (#$item_name).");
             } catch (PDOException $e) {
                 $message = "Database error: " . $e->getMessage();
             }
@@ -94,9 +99,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="dashboard.php">Lost & Found - KyU</a>
-            <div class="ms-auto">
-                <span class="text-white me-3">Welcome, <?= htmlspecialchars($_SESSION['name'] ?? 'User') ?></span>
-                <a href="logout.php" class="btn btn-outline-light">Logout</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#foundNav" aria-controls="foundNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="foundNav">
+                <div class="ms-auto">
+                    <span class="text-white me-3">Welcome, <?= htmlspecialchars($_SESSION['name'] ?? 'User') ?></span>
+                    <a href="logout.php" class="btn btn-outline-light">Logout</a>
+                </div>
             </div>
         </div>
     </nav>

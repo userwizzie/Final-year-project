@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 $name    = $_SESSION['name'] ?? 'User';
 
-// Fetch claims related to the user's lost items, including proof_description
+// Fetch claims submitted by the user (as a finder), including proof_description
 $stmt = $conn->prepare("
     SELECT 
         c.claim_id,
@@ -25,8 +25,7 @@ $stmt = $conn->prepare("
         f.category AS found_category
     FROM claims c
     JOIN found_items f ON c.found_id = f.found_id
-    JOIN lost_items l ON c.lost_id = l.lost_id
-    WHERE l.user_id = ?
+    WHERE c.user_id = ?
     ORDER BY c.claim_date DESC
 ");
 $stmt->execute([$user_id]);
@@ -54,9 +53,14 @@ $claims = $stmt->fetchAll();
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="dashboard.php">Lost & Found - KyU</a>
-            <div class="ms-auto">
-                <span class="text-white me-3">Welcome, <?= htmlspecialchars($name) ?></span>
-                <a href="logout.php" class="btn btn-outline-light">Logout</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#claimsNav" aria-controls="claimsNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="claimsNav">
+                <div class="ms-auto">
+                    <span class="text-white me-3">Welcome, <?= htmlspecialchars($name) ?></span>
+                    <a href="logout.php" class="btn btn-outline-light">Logout</a>
+                </div>
             </div>
         </div>
     </nav>

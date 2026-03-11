@@ -1,5 +1,6 @@
 <?php
 require_once '../includes/config.php';
+require_once '../includes/functions.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login.php");
@@ -8,7 +9,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 
 $message = '';
 
-// Handle approve/reject + reward on approve
+// Handle approve/reject + reward
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $claim_id = (int)($_POST['claim_id'] ?? 0);
     $action   = $_POST['action'] ?? '';
@@ -17,7 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $new_status = $action === 'approve' ? 'approved' : 'rejected';
 
         try {
-            // Get the found_id and finder_id for reward
             $claim_stmt = $conn->prepare("SELECT found_id FROM claims WHERE claim_id = ?");
             $claim_stmt->execute([$claim_id]);
             $claim = $claim_stmt->fetch();
@@ -29,16 +29,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ")->execute([$new_status, $_SESSION['user_id'], $claim_id]);
 
             if ($action === 'approve' && $claim) {
-                // Award reward to finder
                 $conn->prepare("
                     UPDATE found_items 
                     SET reward_status = 'rewarded', reward_points = 100 
                     WHERE found_id = ?
                 ")->execute([$claim['found_id']]);
 
-                $message = "Claim #$claim_id approved! Finder rewarded with 100 points.";
+                $message = "Claim #$claim_id approved! Finder rewarded 100 points.";
+
+                // notify claimant and finder
+                if (!empty($claim['claimant_email'])) {
+                    notify_user($claim['claimant_email'], 'Your claim was approved',
+                                "Hello {$claim['claimant_name']},\n\nYour claim (#$claim_id) has been approved.");
+                }
+                if (!empty($claim['finder_email'])) {
+                    notify_user($claim['finder_email'], 'Reward issued',
+                                "Hello {$claim['finder_name']},\n\nYour item claim was approved and 100 points have been awarded.");
+                }
+            } elseif ($action === 'reject' && $claim) {
+                // reset item status so others can claim again
+                $conn->prepare(
+                    "UPDATE found_items SET reward_status = NULL, reward_points = 0 WHERE found_id = ?"
+                )->execute([$claim['found_id']]);
+
+                $message = "Claim #$claim_id rejected and item released.";
+
+                if (!empty($claim['claimant_email'])) {
+                    notify_user($claim['claimant_email'], 'Your claim was rejected',
+                                "Hello {$claim['claimant_name']},\n\nYour claim (#$claim_id) has been rejected. Feel free to search again.");
+                }
             } else {
-                $message = "Claim #$claim_id has been $new_status.";
+                $message = "Claim #$claim_id $new_status.";
             }
         } catch (PDOException $e) {
             $message = "Error: " . $e->getMessage();
@@ -46,19 +67,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Fetch claims
+// Fetch claims with proof
 try {
     $stmt = $conn->prepare("
-        SELECT c.claim_id, c.claim_date, c.status, c.proof_description,
-               f.item_name AS found_name, f.description AS found_desc, f.date_found,
-               l.item_name AS lost_name, l.description AS lost_desc,
-               u.name AS finder_name, u.email AS finder_email,
-               cu.name AS claimer_name, cu.email AS claimer_email
+        SELECT 
+            c.claim_id, c.claim_date, c.status, c.proof_description,
+            f.item_name AS found_name, f.description AS found_desc, f.image_path,
+            f.date_found, f.location,
+            u.name AS finder_name, u.email AS finder_email,
+            claimant.name AS claimant_name, claimant.email AS claimant_email
         FROM claims c
         LEFT JOIN found_items f ON c.found_id = f.found_id
-        LEFT JOIN lost_items l ON c.lost_id = l.lost_id
-        LEFT JOIN users u ON f.user_id = u.user_id
-        LEFT JOIN users cu ON l.user_id = cu.user_id
+        LEFT JOIN users u ON f.user_id = u.user_id          -- finder
+        LEFT JOIN users claimant ON c.user_id = claimant.user_id  -- claimant
         ORDER BY c.claim_date DESC
         LIMIT 50
     ");
@@ -77,6 +98,11 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verify Claims - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .proof-text { max-height: 80px; overflow: hidden; transition: max-height 0.3s; }
+        .proof-text.expanded { max-height: 500px; }
+        .toggle-proof { cursor: pointer; color: #0d6efd; font-size: 0.9rem; }
+    </style>
 </head>
 <body class="bg-light">
 
@@ -98,8 +124,8 @@ try {
         <?php endif; ?>
 
         <?php if (empty($claims)): ?>
-            <div class="alert alert-secondary text-center">
-                No claims found.
+            <div class="alert alert-secondary text-center py-4">
+                No claims pending or processed yet.
             </div>
         <?php else: ?>
             <div class="table-responsive">
@@ -109,8 +135,9 @@ try {
                             <th>ID</th>
                             <th>Date</th>
                             <th>Found Item</th>
-                            <th>Lost Item</th>
-                            <th>Finder / Claimer</th>
+                            <th>Finder</th>
+                            <th>Claimant</th>
+                            <th>Proof (click to expand)</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -122,32 +149,38 @@ try {
                                 <td><?= htmlspecialchars($claim['claim_date']) ?></td>
                                 <td>
                                     <strong><?= htmlspecialchars($claim['found_name'] ?? 'N/A') ?></strong><br>
-                                    <small class="text-muted">Found: <?= htmlspecialchars($claim['date_found'] ?? 'N/A') ?></small>
+                                    <small><?= htmlspecialchars(substr($claim['found_desc'] ?? '', 0, 60)) ?>...</small>
+                                    <?php if (!empty($claim['image_path'])): ?>
+                                        <br><img src="../<?= htmlspecialchars($claim['image_path']) ?>" alt="Item" style="max-width:80px; margin-top:5px;">
+                                    <?php endif; ?>
+                                </td>
+                                <td><?= htmlspecialchars($claim['finder_name'] ?? 'Unknown') ?><br>
+                                    <small><?= htmlspecialchars($claim['finder_email'] ?? '') ?></small>
+                                </td>
+                                <td><?= htmlspecialchars($claim['claimant_name'] ?? 'Unknown') ?><br>
+                                    <small><?= htmlspecialchars($claim['claimant_email'] ?? '') ?></small>
                                 </td>
                                 <td>
-                                    <strong><?= htmlspecialchars($claim['lost_name'] ?? 'N/A') ?></strong><br>
-                                    <small class="text-muted">Claimer: <?= htmlspecialchars($claim['claimer_name'] ?? 'Unknown') ?></small>
-                                </td>
-                                <td>
-                                    <strong>Finder:</strong> <?= htmlspecialchars($claim['finder_name'] ?? 'Unknown') ?><br>
-                                    <strong>Claimer:</strong> <?= htmlspecialchars($claim['claimer_name'] ?? 'Unknown') ?>
+                                    <div class="proof-text" id="proof-<?= $claim['claim_id'] ?>">
+                                        <?= nl2br(htmlspecialchars(substr($claim['proof_description'] ?? 'No proof provided', 0, 150))) ?>...
+                                    </div>
+                                    <?php if (strlen($claim['proof_description'] ?? '') > 150): ?>
+                                        <span class="toggle-proof" onclick="toggleProof(<?= $claim['claim_id'] ?>)">Show more</span>
+                                    <?php endif; ?>
                                 </td>
                                 <td>
                                     <span class="badge 
-                                        <?= $claim['status'] === 'pending' ? 'bg-warning' : 
+                                        <?= $claim['status'] === 'pending' ? 'bg-warning text-dark' : 
                                             ($claim['status'] === 'approved' ? 'bg-success' : 'bg-danger') ?>">
                                         <?= ucfirst($claim['status']) ?>
                                     </span>
-                                    <?php if (!empty($claim['proof_description'])): ?>
-                                        <br><small class="text-muted">Has proof</small>
-                                    <?php endif; ?>
                                 </td>
                                 <td>
                                     <?php if ($claim['status'] === 'pending'): ?>
                                         <form method="POST" class="d-inline-block">
                                             <input type="hidden" name="claim_id" value="<?= $claim['claim_id'] ?>">
                                             <button type="submit" name="action" value="approve" class="btn btn-sm btn-success me-1">Approve</button>
-                                            <button type="submit" name="action" value="reject"  class="btn btn-sm btn-danger">Reject</button>
+                                            <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger">Reject</button>
                                         </form>
                                     <?php else: ?>
                                         <small>Processed</small>
@@ -160,10 +193,22 @@ try {
             </div>
         <?php endif; ?>
 
-        <div class="mt-4">
-            <a href="dashboard.php" class="btn btn-secondary">Back to Admin Dashboard</a>
+        <div class="mt-4 text-center">
+            <a href="dashboard.php" class="btn btn-secondary btn-lg px-5">Back to Admin Dashboard</a>
         </div>
     </div>
 
+    <script>
+        function toggleProof(id) {
+            const el = document.getElementById('proof-' + id);
+            if (el.classList.contains('expanded')) {
+                el.classList.remove('expanded');
+                el.nextElementSibling.textContent = 'Show more';
+            } else {
+                el.classList.add('expanded');
+                el.nextElementSibling.textContent = 'Show less';
+            }
+        }
+    </script>
 </body>
 </html>

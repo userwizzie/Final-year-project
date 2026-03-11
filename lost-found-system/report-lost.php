@@ -94,9 +94,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="dashboard.php">Lost & Found - KyU</a>
-            <div class="ms-auto">
-                <span class="text-white me-3">Welcome, <?= htmlspecialchars($_SESSION['name'] ?? 'User') ?></span>
-                <a href="logout.php" class="btn btn-outline-light">Logout</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#lostNav" aria-controls="lostNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="lostNav">
+                <div class="ms-auto">
+                    <span class="text-white me-3">Welcome, <?= htmlspecialchars($_SESSION['name'] ?? 'User') ?></span>
+                    <a href="logout.php" class="btn btn-outline-light">Logout</a>
+                </div>
             </div>
         </div>
     </nav>

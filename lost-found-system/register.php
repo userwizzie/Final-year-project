@@ -1,5 +1,6 @@
 <?php
 require_once 'includes/config.php';
+require_once 'includes/functions.php';
 
 $message = '';
 $success = false;
@@ -36,6 +37,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($stmt->execute([$name, $email, $hashed, $phone])) {
                 $success = true;
                 $message = "Registration successful! You can now log in.";
+
+                // welcome notification
+                notify_user($email, 'Welcome to Lost & Found',
+                            "Hi $name,\n\nThank you for registering with the Lost & Found system at Kyambogo University.\nYou may now log in and start reporting items.");
             } else {
                 $message = "Something went wrong. Try again.";
             }

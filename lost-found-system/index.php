@@ -19,9 +19,14 @@ require_once 'includes/config.php';
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
             <a class="navbar-brand" href="index.php">Lost & Found - KyU</a>
-            <div class="ms-auto">
-                <a href="login.php" class="btn btn-outline-primary me-2">Login</a>
-                <a href="register.php" class="btn btn-primary">Register</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#homeNav" aria-controls="homeNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="homeNav">
+                <div class="ms-auto">
+                    <a href="login.php" class="btn btn-outline-primary me-2">Login</a>
+                    <a href="register.php" class="btn btn-primary">Register</a>
+                </div>
             </div>
         </div>
     </nav>

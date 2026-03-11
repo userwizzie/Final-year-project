@@ -27,7 +27,7 @@ $found_items = $found_stmt->fetchAll();
 $claim_stmt = $conn->prepare("
     SELECT c.claim_id, c.claim_date, c.status, f.item_name, f.found_id
     FROM claims c JOIN found_items f ON c.found_id = f.found_id
-    WHERE c.lost_id IN (SELECT lost_id FROM lost_items WHERE user_id = ?)
+    WHERE c.user_id = ?
     ORDER BY c.claim_date DESC LIMIT 10
 ");
 $claim_stmt->execute([$user_id]);
@@ -51,9 +51,14 @@ $claims = $claim_stmt->fetchAll();
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="dashboard.php">Lost & Found - KyU</a>
-            <div class="ms-auto">
-                <span class="text-white me-3">Welcome, <?= htmlspecialchars($name) ?></span>
-                <a href="logout.php" class="btn btn-outline-light">Logout</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNav">
+                <div class="ms-auto">
+                    <span class="text-white me-3">Welcome, <?= htmlspecialchars($name) ?></span>
+                    <a href="logout.php" class="btn btn-outline-light">Logout</a>
+                </div>
             </div>
         </div>
     </nav>

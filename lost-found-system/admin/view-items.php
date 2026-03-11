@@ -1,26 +1,30 @@
 <?php
 require_once '../includes/config.php';
 
-// protect admin
+// admin check
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login.php");
     exit;
 }
 
 try {
-    $stmt = $conn->query("SELECT user_id, name, email, role FROM users ORDER BY user_id DESC");
-    $users = $stmt->fetchAll();
+    $stmt = $conn->query("SELECT 'lost' AS type, lost_id AS id, item_name, description, category, date_lost AS item_date, location, image_path, user_id FROM lost_items");
+    $lost = $stmt->fetchAll();
+    $stmt = $conn->query("SELECT 'found' AS type, found_id AS id, item_name, description, category, date_found AS item_date, location, image_path, user_id FROM found_items");
+    $found = $stmt->fetchAll();
+    $items = array_merge($lost, $found);
 } catch (PDOException $e) {
-    $users = [];
+    $items = [];
     $error = $e->getMessage();
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Users - Admin</title>
+    <title>All Items - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
@@ -35,32 +39,36 @@ try {
     </nav>
 
     <div class="container mt-5">
-        <h2>Registered Users</h2>
+        <h2>All Reported Items</h2>
 
         <?php if (!empty($error)): ?>
-            <div class="alert alert-danger">Error loading users: <?= htmlspecialchars($error) ?></div>
+            <div class="alert alert-danger">Error loading items: <?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
-        <?php if (empty($users)): ?>
-            <div class="alert alert-secondary">No users registered yet.</div>
+        <?php if (empty($items)): ?>
+            <div class="alert alert-secondary">No items to display.</div>
         <?php else: ?>
             <div class="table-responsive">
                 <table class="table table-striped">
                     <thead class="table-dark">
                         <tr>
-                            <th>ID</th>
+                            <th>Type</th>
                             <th>Name</th>
-                            <th>Email</th>
-                            <th>Role</th>
+                            <th>Category</th>
+                            <th>Date</th>
+                            <th>Location</th>
+                            <th>Reported By</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($users as $u): ?>
+                        <?php foreach ($items as $it): ?>
                             <tr>
-                                <td><?= $u['user_id'] ?></td>
-                                <td><?= htmlspecialchars($u['name']) ?></td>
-                                <td><?= htmlspecialchars($u['email']) ?></td>
-                                <td><?= htmlspecialchars($u['role']) ?></td>
+                                <td><?= htmlspecialchars(ucfirst($it['type'])) ?></td>
+                                <td><?= htmlspecialchars($it['item_name']) ?></td>
+                                <td><?= htmlspecialchars($it['category'] ?? 'N/A') ?></td>
+                                <td><?= htmlspecialchars($it['item_date']) ?></td>
+                                <td><?= htmlspecialchars($it['location'] ?? '') ?></td>
+                                <td><?= htmlspecialchars($it['user_id']) ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
