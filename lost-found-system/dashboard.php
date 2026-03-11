@@ -39,7 +39,7 @@ $claims = $claim_stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Dashboard - Lost & Found</title>
+    <title>Dashboard - Kyambogo University Lost & Found System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .section-header { margin-top: 2.5rem; margin-bottom: 1rem; font-weight: bold; }
@@ -182,6 +182,38 @@ $claims = $claim_stmt->fetchAll();
             </div>
         <?php endif; ?>
     </div>
+
+    <!-- Welcome Modal Popup -->
+    <div class="modal fade" id="welcomeModal" tabindex="-1" aria-labelledby="welcomeLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content border-success">
+                <div class="modal-header bg-success text-white py-2">
+                    <h5 class="modal-title fs-6" id="welcomeLabel">Welcome back, <?= htmlspecialchars($name) ?>! 👋</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-3">
+                    <p class="mb-0 small">You're logged in to the Kyambogo University Lost & Found System. Explore, report, and claim items!</p>
+                </div>
+                <div class="modal-footer py-2">
+                    <button type="button" class="btn btn-sm btn-success" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Show welcome modal on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
+            welcomeModal.show();
+
+            // Auto-dismiss after 5 seconds
+            setTimeout(function() {
+                welcomeModal.hide();
+            }, 5000);
+        });
+    </script>
 
 </body>
 </html>

@@ -62,46 +62,114 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Lost & Found</title>
+    <title>Login - Kyambogo University Lost & Found System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            overflow: hidden;
+            max-width: 400px;
+            width: 100%;
+        }
+        .logo-section {
+            background: #f8f9fa;
+            padding: 2rem;
+            text-align: center;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .logo-placeholder {
+            width: 80px;
+            height: 80px;
+            background: #2a5298;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .university-name {
+            color: #2a5298;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+        .motto {
+            color: #6c757d;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+        .form-section {
+            padding: 2rem;
+        }
+        .btn-login {
+            background: #2a5298;
+            border: none;
+            padding: 0.75rem;
+            font-weight: 600;
+        }
+        .btn-login:hover {
+            background: #1e3c72;
+        }
+        .register-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+    </style>
 </head>
-<body class="bg-light">
+<body>
 
 <div class="container">
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-5">
-            <div class="card shadow">
-                <div class="card-header text-center bg-primary text-white">
-                    <h4>Sign In</h4>
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="login-container">
+                <div class="logo-section">
+                    <!-- <div class="logo-placeholder">KU</div> -->
+                     <img src="assets/images/kyu.jpg" alt="Kyambogo University Logo" class="mb-3" style="width: 80px; height: 80px;">
+                    <h4 class="university-name">Kyambogo University</h4>
+                    <p class="motto">Knowledge and Skills for Service</p>
                 </div>
-                <div class="card-body">
+
+                <div class="form-section">
+                    <h5 class="text-center mb-4">Login</h5>
 
                     <?php if ($message): ?>
-                        <div class="alert <?= $success ? 'alert-success' : 'alert-danger' ?>">
+                        <div class="alert <?= $success ? 'alert-success' : 'alert-danger' ?> alert-dismissible fade show">
                             <?= htmlspecialchars($message) ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     <?php endif; ?>
 
                     <form method="POST">
                         <div class="mb-3">
                             <label class="form-label">Email address</label>
-                            <input type="email" name="email" class="form-control" required autofocus>
-                        </div>
+                            <input type="email" name="email" class="form-control">                         </div>
                         <div class="mb-3">
                             <label class="form-label">Password</label>
                             <input type="password" name="password" class="form-control" required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                        <button type="submit" class="btn btn-login w-100">Login</button>
                     </form>
 
-                    <p class="text-center mt-3">
-                        Don't have an account? <a href="register.php">Register here</a>
-                    </p>
+                    <div class="register-link">
+                        <p class="mb-0">Don't have an account? <a href="register.php" class="text-decoration-none">Register here</a></p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

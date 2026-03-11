@@ -8,9 +8,9 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 }
 
 try {
-    $stmt = $conn->query("SELECT 'lost' AS type, lost_id AS id, item_name, description, category, date_lost AS item_date, location, image_path, user_id FROM lost_items");
+    $stmt = $conn->query("SELECT 'lost' AS type, lost_id AS id, item_name, description, category, date_lost AS item_date, location, image_path, u.name AS reporter_name FROM lost_items l JOIN users u ON l.user_id = u.user_id");
     $lost = $stmt->fetchAll();
-    $stmt = $conn->query("SELECT 'found' AS type, found_id AS id, item_name, description, category, date_found AS item_date, location, image_path, user_id FROM found_items");
+    $stmt = $conn->query("SELECT 'found' AS type, found_id AS id, item_name, description, category, date_found AS item_date, location, image_path, u.name AS reporter_name FROM found_items f JOIN users u ON f.user_id = u.user_id");
     $found = $stmt->fetchAll();
     $items = array_merge($lost, $found);
 } catch (PDOException $e) {
@@ -68,7 +68,7 @@ try {
                                 <td><?= htmlspecialchars($it['category'] ?? 'N/A') ?></td>
                                 <td><?= htmlspecialchars($it['item_date']) ?></td>
                                 <td><?= htmlspecialchars($it['location'] ?? '') ?></td>
-                                <td><?= htmlspecialchars($it['user_id']) ?></td>
+                                <td><?= htmlspecialchars($it['reporter_name'] ?? 'Unknown') ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

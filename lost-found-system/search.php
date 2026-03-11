@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !empty($search_term)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Items - Lost & Found</title>
+    <title>Search Items - Kyambogo University Lost & Found System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .card-img-top { height: 180px; object-fit: cover; border-radius: 0.375rem 0.375rem 0 0; }
