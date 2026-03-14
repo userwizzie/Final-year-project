@@ -1,0 +1,10 @@
+[2026-03-14 20:04:00] To: nab@nab.com | Subject: Welcome to Lost & Found | Message: Hi pauline,
+
+Thank you for registering with the Lost & Found system at Kyambogo University.
+You may now log in and start reporting items.
+[2026-03-14 20:09:45] To: wizzy@naru.com | Subject: Welcome to Lost & Found | Message: Hi wizzy,
+
+Thank you for registering with the Lost & Found system at Kyambogo University.
+You may now log in and start reporting items.
+[2026-03-14 20:11:56] To: admin@lostfound.local | Subject: New found item reported | Message: User #3 reported a new item (#Sweater).
+[2026-03-14 20:12:24] To: admin@lostfound.local | Subject: New claim submitted | Message: User #8 submitted a claim for found item #8.

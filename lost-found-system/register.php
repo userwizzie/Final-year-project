@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="logo-section">
                     <div class="logo-placeholder">KU</div>
                     <h4 class="university-name">Kyambogo University</h4>
-                    <p class="motto">Knowledge and Service</p>
+                    <p class="motto">Knowledge and Skills for Service</p>
                 </div>
 
                 <div class="form-section">
@@ -141,7 +141,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     <?php endif; ?>
 
-                    <form method="POST">
+                    <?php if ($success): ?>
+                        <script>
+                            setTimeout(function() {
+                                window.location.href = 'login.php';
+                            }, 2000);
+                        </script>
+                    <?php endif; ?>
+
+                    <form method="POST" onsubmit="return validateForm()">
                         <div class="mb-3">
                             <label class="form-label">Full Name</label>
                             <input type="text" name="name" class="form-control" required>
@@ -175,5 +183,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/validation.js"></script>
 </body>
 </html>
