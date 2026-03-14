@@ -51,11 +51,10 @@ try {
             </button>
             <div class="collapse navbar-collapse" id="adminNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="dashboard.php">Dashboard</a></li>
                     <li class="nav-item"><a class="nav-link" href="verify-claims.php">Verify Claims</a></li>
-                    <li class="nav-item"><a class="nav-link" href="view-items.php">Items</a></li>
+                    <li class="nav-item"><a class="nav-link" href="view-items.php">Manage Items</a></li>
                     <li class="nav-item"><a class="nav-link" href="manage-users.php">Users</a></li>
-                    <li class="nav-item"><a class="nav-link" href="manage-items.php">Manage Items</a></li>
                 </ul>
                 <div class="d-flex">
                     <a href="../logout.php" class="btn btn-outline-light">Logout</a>
@@ -69,40 +68,40 @@ try {
 
         <!-- summary statistics -->
         <div class="row mb-5 g-4">
-            <div class="col-sm-6 col-md-4 col-lg-2">
-                <div class="card text-center border-secondary shadow-sm">
+            <div class="col-md-3 col-sm-6">
+                <div class="card text-center border-secondary shadow-sm h-100">
                     <div class="card-body">
                         <h6 class="card-subtitle mb-2 text-muted">Pending Claims</h6>
                         <h3><?= number_format($stats['pending_claims'] ?? 0) ?></h3>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6 col-md-4 col-lg-2">
-                <div class="card text-center border-secondary shadow-sm">
+            <div class="col-md-3 col-sm-6">
+                <div class="card text-center border-secondary shadow-sm h-100">
                     <div class="card-body">
                         <h6 class="card-subtitle mb-2 text-muted">Users</h6>
                         <h3><?= number_format($stats['total_users'] ?? 0) ?></h3>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6 col-md-4 col-lg-2">
-                <div class="card text-center border-secondary shadow-sm">
+            <div class="col-md-3 col-sm-6">
+                <div class="card text-center border-secondary shadow-sm h-100">
                     <div class="card-body">
                         <h6 class="card-subtitle mb-2 text-muted">Lost Items</h6>
                         <h3><?= number_format($stats['lost_count'] ?? 0) ?></h3>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6 col-md-4 col-lg-2">
-                <div class="card text-center border-secondary shadow-sm">
+            <div class="col-md-3 col-sm-6">
+                <div class="card text-center border-secondary shadow-sm h-100">
                     <div class="card-body">
                         <h6 class="card-subtitle mb-2 text-muted">Found Items</h6>
                         <h3><?= number_format($stats['found_count'] ?? 0) ?></h3>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6 col-md-4 col-lg-2">
-                <div class="card text-center border-secondary shadow-sm">
+            <div class="col-md-3 col-sm-6">
+                <div class="card text-center border-secondary shadow-sm h-100">
                     <div class="card-body">
                         <h6 class="card-subtitle mb-2 text-muted">Rewards Given</h6>
                         <h3><?= number_format($stats['total_rewards'] ?? 0) ?></h3>
@@ -112,8 +111,8 @@ try {
         </div>
 
         <div class="row g-4">
-            <div class="col-md-3">
-                <div class="card text-center border-primary shadow">
+            <div class="col-md-4">
+                <div class="card text-center border-primary shadow h-100">
                     <div class="card-body">
                         <h5 class="card-title">Verify Claims</h5>
                         <p class="card-text">Review and approve/reject ownership claims.</p>
@@ -122,32 +121,22 @@ try {
                 </div>
             </div>
 
-            <div class="col-md-3">
-                <div class="card text-center border-info shadow">
+            <div class="col-md-4">
+                <div class="card text-center border-info shadow h-100">
                     <div class="card-body">
-                        <h5 class="card-title">View All Items</h5>
-                        <p class="card-text">Browse all lost and found reports.</p>
+                        <h5 class="card-title">Manage Items</h5>
+                        <p class="card-text">View and delete lost and found reports.</p>
                         <a href="view-items.php" class="btn btn-info text-white">Go to Items</a>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-3">
-                <div class="card text-center border-warning shadow">
+            <div class="col-md-4">
+                <div class="card text-center border-warning shadow h-100">
                     <div class="card-body">
                         <h5 class="card-title">Manage Users</h5>
                         <p class="card-text">List all registered accounts.</p>
                         <a href="manage-users.php" class="btn btn-warning text-dark">Go to Users</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="card text-center border-danger shadow">
-                    <div class="card-body">
-                        <h5 class="card-title">Manage Items</h5>
-                        <p class="card-text">Delete lost and found items.</p>
-                        <a href="manage-items.php" class="btn btn-danger">Go to Manage Items</a>
                     </div>
                 </div>
             </div>

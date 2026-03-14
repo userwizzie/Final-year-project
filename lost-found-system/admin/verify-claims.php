@@ -116,7 +116,8 @@ try {
             <div class="collapse navbar-collapse" id="adminNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="view-items.php">Items</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="verify-claims.php">Verify Claims</a></li>
+                    <li class="nav-item"><a class="nav-link" href="view-items.php">Manage Items</a></li>
                     <li class="nav-item"><a class="nav-link" href="manage-users.php">Users</a></li>
                 </ul>
                 <div class="d-flex">
