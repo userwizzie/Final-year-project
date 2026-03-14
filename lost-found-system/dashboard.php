@@ -46,7 +46,7 @@ $claims = $claim_stmt->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Kyambogo University Lost & Found</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
     <style>
         .section-header { margin-top: 2.5rem; margin-bottom: 1rem; font-weight: bold; }
@@ -212,7 +212,7 @@ $claims = $claim_stmt->fetchAll();
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
     <?php if ($show_welcome): ?>
     <script>
         // Show welcome modal on page load

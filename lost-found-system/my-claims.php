@@ -38,7 +38,7 @@ $claims = $stmt->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Claims - Kyambogo University Lost & Found</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
     <style>
         .proof-section { background: #fff; border-radius: 0.75rem; padding: 1rem; margin-top: 1rem; border: 1px solid rgba(0,0,0,0.08); }
@@ -167,6 +167,6 @@ $claims = $stmt->fetchAll();
         </div>
     </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
