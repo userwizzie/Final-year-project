@@ -9,6 +9,12 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 $name    = $_SESSION['name'] ?? 'User';
 
+// Check if user just logged in to show welcome message
+$show_welcome = isset($_SESSION['just_logged_in']) && $_SESSION['just_logged_in'];
+if ($show_welcome) {
+    unset($_SESSION['just_logged_in']);
+}
+
 $lost_stmt = $conn->prepare("
     SELECT lost_id, item_name, category, date_lost, location, description, image_path
     FROM lost_items WHERE user_id = ? ORDER BY date_lost DESC LIMIT 10
@@ -39,24 +45,29 @@ $claims = $claim_stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Kyambogo University Lost & Found System</title>
+    <title>Dashboard - Kyambogo University Lost & Found</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/style.css" rel="stylesheet">
     <style>
         .section-header { margin-top: 2.5rem; margin-bottom: 1rem; font-weight: bold; }
-        .card-img-top { height: 160px; object-fit: cover; border-radius: 0.375rem 0.375rem 0 0; }
     </style>
 </head>
 <body class="bg-light">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-kyu shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="dashboard.php">Lost & Found - KyU</a>
+            <a class="navbar-brand" href="dashboard.php">KyU Lost & Found</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="mainNav">
-                <div class="ms-auto">
-                    <span class="text-white me-3">Welcome, <?= htmlspecialchars($name) ?></span>
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="search.php">Search</a></li>
+                    <li class="nav-item"><a class="nav-link" href="report-lost.php">Report Lost</a></li>
+                    <li class="nav-item"><a class="nav-link" href="report-found.php">Report Found</a></li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <span class="navbar-text me-3">Hello, <?= htmlspecialchars($name) ?></span>
                     <a href="logout.php" class="btn btn-outline-light">Logout</a>
                 </div>
             </div>
@@ -68,34 +79,34 @@ $claims = $claim_stmt->fetchAll();
 
         <div class="row g-4 mb-5">
             <div class="col-md-3">
-                <div class="card text-center border-danger shadow-sm">
+                <div class="card text-center border-0 card-modern">
                     <div class="card-body">
                         <h5>Report Lost</h5>
-                        <a href="report-lost.php" class="btn btn-danger mt-2">Report</a>
+                        <a href="report-lost.php" class="btn btn-kyu w-100 mt-2">Report Lost</a>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card text-center border-success shadow-sm">
+                <div class="card text-center border-0 card-modern">
                     <div class="card-body">
                         <h5>Report Found</h5>
-                        <a href="report-found.php" class="btn btn-success mt-2">Report</a>
+                        <a href="report-found.php" class="btn btn-kyu-alt w-100 mt-2">Report Found</a>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card text-center border-primary shadow-sm">
+                <div class="card text-center border-0 card-modern">
                     <div class="card-body">
                         <h5>Search Items</h5>
-                        <a href="search.php" class="btn btn-primary mt-2">Search</a>
+                        <a href="search.php" class="btn btn-kyu w-100 mt-2">Search</a>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card text-center border-info shadow-sm">
+                <div class="card text-center border-0 card-modern">
                     <div class="card-body">
                         <h5>My Claims</h5>
-                        <a href="my-claims.php" class="btn btn-info text-white mt-2">View</a>
+                        <a href="my-claims.php" class="btn btn-kyu-alt w-100 mt-2">View Claims</a>
                     </div>
                 </div>
             </div>
@@ -202,6 +213,7 @@ $claims = $claim_stmt->fetchAll();
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <?php if ($show_welcome): ?>
     <script>
         // Show welcome modal on page load
         document.addEventListener('DOMContentLoaded', function() {
@@ -214,6 +226,7 @@ $claims = $claim_stmt->fetchAll();
             }, 5000);
         });
     </script>
+    <?php endif; ?>
 
 </body>
 </html>

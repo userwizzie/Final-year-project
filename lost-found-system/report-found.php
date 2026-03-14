@@ -91,20 +91,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Report Found Item - Kyambogo University Lost & Found System</title>
+    <title>Report Found Item - Kyambogo University Lost & Found</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/style.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-kyu shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="dashboard.php">Lost & Found - KyU</a>
+            <a class="navbar-brand" href="dashboard.php">KyU Lost & Found</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#foundNav" aria-controls="foundNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="foundNav">
-                <div class="ms-auto">
-                    <span class="text-white me-3">Welcome, <?= htmlspecialchars($_SESSION['name'] ?? 'User') ?></span>
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="search.php">Search</a></li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <span class="navbar-text me-3">Hello, <?= htmlspecialchars($_SESSION['name'] ?? 'User') ?></span>
                     <a href="logout.php" class="btn btn-outline-light">Logout</a>
                 </div>
             </div>
@@ -127,51 +132,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <?php endif; ?>
 
                         <form method="POST" enctype="multipart/form-data">
-                            <div class="mb-3">
-                                <label class="form-label">Item Name <span class="text-danger">*</span></label>
-                                <input type="text" name="item_name" class="form-control" required 
-                                       placeholder="e.g., Black Leather Wallet, iPhone 13">
+                            <div class="form-section">
+                                <h5>Item Details</h5>
+                                <div class="mb-3">
+                                    <label class="form-label">Item Name <span class="text-danger">*</span></label>
+                                    <input type="text" name="item_name" class="form-control" required 
+                                           placeholder="e.g., Black Leather Wallet, iPhone 13">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Description <span class="text-danger">*</span></label>
+                                    <textarea name="description" class="form-control" rows="4" required 
+                                              placeholder="Color, brand, condition, any unique features or contents..."></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Category <span class="text-danger">*</span></label>
+                                    <select name="category" class="form-select" required>
+                                        <option value="">-- Select Category --</option>
+                                        <option value="Phone">Phone / Mobile Device</option>
+                                        <option value="Wallet">Wallet / Purse</option>
+                                        <option value="Document">ID / Passport / Certificate</option>
+                                        <option value="Bag">Bag / Backpack</option>
+                                        <option value="Clothing">Clothing / Shoes</option>
+                                        <option value="Electronics">Laptop / Charger / Earphones</option>
+                                        <option value="Keys">Keys</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
                             </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Description <span class="text-danger">*</span></label>
-                                <textarea name="description" class="form-control" rows="4" required 
-                                          placeholder="Color, brand, condition, any unique features or contents..."></textarea>
+                            <div class="form-section">
+                                <h5>Location & Date</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Date Found <span class="text-danger">*</span></label>
+                                        <input type="date" name="date_found" class="form-control" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Location Found</label>
+                                        <input type="text" name="location" class="form-control" 
+                                               placeholder="e.g., Main Gate, Library Reading Room, Kikoni Stage">
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Upload Photo of Item (optional)</label>
-                                <input type="file" name="item_image" class="form-control" accept="image/*">
-                                <small class="form-text text-muted">JPG, JPEG, PNG, GIF – max 2MB</small>
+                            <div class="form-section">
+                                <h5>Image Upload (Optional)</h5>
+                                <div class="mb-3">
+                                    <label class="form-label">Upload Photo</label>
+                                    <input type="file" name="item_image" class="form-control" accept="image/*">
+                                    <small class="form-text text-muted">JPG, JPEG, PNG, GIF – max 2MB</small>
+                                </div>
                             </div>
 
-                            <div class="mb-3">
-                                <label class="form-label">Category <span class="text-danger">*</span></label>
-                                <select name="category" class="form-select" required>
-                                    <option value="">-- Select Category --</option>
-                                    <option value="Phone">Phone / Mobile Device</option>
-                                    <option value="Wallet">Wallet / Purse</option>
-                                    <option value="Document">ID / Passport / Certificate</option>
-                                    <option value="Bag">Bag / Backpack</option>
-                                    <option value="Clothing">Clothing / Shoes</option>
-                                    <option value="Electronics">Laptop / Charger / Earphones</option>
-                                    <option value="Keys">Keys</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Date Found <span class="text-danger">*</span></label>
-                                <input type="date" name="date_found" class="form-control" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Location Found</label>
-                                <input type="text" name="location" class="form-control" 
-                                       placeholder="e.g., Main Gate, Library Reading Room, Kikoni Stage">
-                            </div>
-
-                            <button type="submit" class="btn btn-success w-100">Submit Found Item Report</button>
+                            <button type="submit" class="btn btn-kyu w-100">Submit Found Item Report</button>
                         </form>
 
                         <div class="text-center mt-4">
@@ -183,5 +198,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

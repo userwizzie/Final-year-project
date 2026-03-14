@@ -37,28 +37,29 @@ $claims = $stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Claims - Kyambogo University Lost & Found System</title>
+    <title>My Claims - Kyambogo University Lost & Found</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/css/style.css" rel="stylesheet">
     <style>
-        .claim-card { border-left: 6px solid; margin-bottom: 1.5rem; }
-        .claim-pending  { border-left-color: #ffc107; background-color: #fff8e1; }
-        .claim-approved { border-left-color: #198754; background-color: #d4edda; }
-        .claim-rejected { border-left-color: #dc3545; background-color: #f8d7da; }
-        .card-img-top { height: 180px; object-fit: cover; border-radius: 0.375rem 0.375rem 0 0; }
-        .proof-section { background: #f8f9fa; border-radius: 0.375rem; padding: 1rem; margin-top: 1rem; }
+        .proof-section { background: #fff; border-radius: 0.75rem; padding: 1rem; margin-top: 1rem; border: 1px solid rgba(0,0,0,0.08); }
     </style>
 </head>
 <body class="bg-light">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-kyu shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="dashboard.php">Lost & Found - KyU</a>
+            <a class="navbar-brand" href="dashboard.php">KyU Lost & Found</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#claimsNav" aria-controls="claimsNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="claimsNav">
-                <div class="ms-auto">
-                    <span class="text-white me-3">Welcome, <?= htmlspecialchars($name) ?></span>
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="search.php">Search</a></li>
+                    <li class="nav-item"><a class="nav-link" href="report-found.php">Report Found</a></li>
+                    <li class="nav-item"><a class="nav-link" href="report-lost.php">Report Lost</a></li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <span class="navbar-text me-3">Hello, <?= htmlspecialchars($name) ?></span>
                     <a href="logout.php" class="btn btn-outline-light">Logout</a>
                 </div>
             </div>
@@ -72,18 +73,51 @@ $claims = $stmt->fetchAll();
         </div>
 
         <?php if (empty($claims)): ?>
-            <div class="alert alert-info text-center py-5">
-                <h4 class="mb-3">No Claims Yet</h4>
-                <p>You haven't submitted any claims on found items.</p>
-                <a href="search.php" class="btn btn-lg btn-primary mt-3">Go Search for Lost Items →</a>
+            <div class="empty-state mx-auto" style="max-width: 540px;">
+                <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="32" cy="32" r="30" opacity="0.18" />
+                    <path d="M22 26h20" />
+                    <path d="M22 34h20" />
+                    <path d="M22 42h12" />
+                    <path d="M18 18l10 10" />
+                    <path d="M28 18l-10 10" />
+                </svg>
+                <h4 class="mb-3">No claims found</h4>
+                <p class="text-muted mb-3">You haven't submitted any claims yet. Try searching for found items to claim.</p>
+                <a href="search.php" class="btn btn-kyu">Search Found Items</a>
             </div>
         <?php else: ?>
-            <?php foreach ($claims as $claim): ?>
-                <div class="claim-card shadow rounded <?= 
-                    $claim['status'] === 'pending' ? 'claim-pending' : 
-                    ($claim['status'] === 'approved' ? 'claim-approved' : 'claim-rejected') 
-                ?>">
+            <?php foreach ($claims as $claim): 
+                $status = $claim['status'];
+                $step2Class = $status === 'pending' ? 'active' : 'done';
+                $step3Class = $status === 'approved' ? 'done' : ($status === 'rejected' ? 'rejected' : '');
+            ?>
+                <div class="card card-modern shadow mb-4 <?= $status === 'pending' ? 'border-warning' : ($status === 'approved' ? 'border-success' : 'border-danger') ?>">
                     <div class="card-body">
+                        <div class="stepper">
+                            <div class="step done">
+                                <div class="bullet">1</div>
+                                <div>
+                                    <div class="fw-semibold">Submitted</div>
+                                    <div class="small text-muted">Claim sent</div>
+                                </div>
+                            </div>
+                            <div class="step <?= $step2Class ?>">
+                                <div class="bullet">2</div>
+                                <div>
+                                    <div class="fw-semibold">Under Review</div>
+                                    <div class="small text-muted">Admin is checking</div>
+                                </div>
+                            </div>
+                            <div class="step <?= $step3Class ?>">
+                                <div class="bullet">3</div>
+                                <div>
+                                    <div class="fw-semibold"><?= $status === 'approved' ? 'Approved' : ($status === 'rejected' ? 'Rejected' : 'Final Decision') ?></div>
+                                    <div class="small text-muted"><?= $status === 'approved' ? 'Collect your item' : ($status === 'rejected' ? 'Try again' : '') ?></div>
+                                </div>
+                            </div>
+                        </div>
+
                         <?php if (!empty($claim['found_image'])): ?>
                             <img src="<?= htmlspecialchars($claim['found_image']) ?>" 
                                  class="card-img-top mb-3" alt="Found item">
@@ -133,5 +167,6 @@ $claims = $stmt->fetchAll();
         </div>
     </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

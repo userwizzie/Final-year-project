@@ -98,20 +98,30 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verify Claims - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/css/style.css" rel="stylesheet">
     <style>
         .proof-text { max-height: 80px; overflow: hidden; transition: max-height 0.3s; }
         .proof-text.expanded { max-height: 500px; }
-        .toggle-proof { cursor: pointer; color: #0d6efd; font-size: 0.9rem; }
+        .toggle-proof { cursor: pointer; color: var(--kyu-blue); font-size: 0.9rem; }
     </style>
 </head>
 <body class="bg-light">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-kyu shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="dashboard.php">Admin - Lost & Found</a>
-            <div class="ms-auto">
-                <a href="dashboard.php" class="btn btn-outline-light me-2">Dashboard</a>
-                <a href="../logout.php" class="btn btn-outline-light">Logout</a>
+            <a class="navbar-brand" href="dashboard.php">KyU Lost & Found Admin</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav" aria-controls="adminNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="adminNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="view-items.php">Items</a></li>
+                    <li class="nav-item"><a class="nav-link" href="manage-users.php">Users</a></li>
+                </ul>
+                <div class="d-flex">
+                    <a href="../logout.php" class="btn btn-outline-light">Logout</a>
+                </div>
             </div>
         </div>
     </nav>
@@ -128,9 +138,9 @@ try {
                 No claims pending or processed yet.
             </div>
         <?php else: ?>
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead class="table-dark">
+            <div class="data-grid">
+                <table>
+                    <thead>
                         <tr>
                             <th>ID</th>
                             <th>Date</th>
@@ -210,5 +220,6 @@ try {
             }
         }
     </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

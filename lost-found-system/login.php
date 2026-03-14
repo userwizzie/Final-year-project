@@ -30,6 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['email']     = $user['email'];
             $_SESSION['role']      = $user['role'] ?? 'admin'; // admins don't have role field, so default to 'admin'
 
+            $_SESSION['just_logged_in'] = true; // Flag for welcome message
+
             $success = true;
             session_regenerate_id(true);
             $message = "Login successful! Redirecting...";
@@ -55,6 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+
 ?>
 
 <!DOCTYPE html>

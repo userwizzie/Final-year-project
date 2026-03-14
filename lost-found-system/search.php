@@ -43,28 +43,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !empty($search_term)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Items - Kyambogo University Lost & Found System</title>
+    <title>Search Items - Kyambogo University Lost & Found</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .card-img-top { height: 180px; object-fit: cover; border-radius: 0.375rem 0.375rem 0 0; }
-    </style>
+    <link href="assets/css/style.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-kyu shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="<?= $is_logged_in ? 'dashboard.php' : 'index.php' ?>">Lost & Found - KyU</a>
+            <a class="navbar-brand" href="<?= $is_logged_in ? 'dashboard.php' : 'index.php' ?>">KyU Lost & Found</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#searchNav" aria-controls="searchNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="searchNav">
-                <div class="ms-auto">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="search.php">Search</a></li>
+                    <li class="nav-item"><a class="nav-link" href="report-lost.php">Report Lost</a></li>
+                    <li class="nav-item"><a class="nav-link" href="report-found.php">Report Found</a></li>
+                </ul>
+                <div class="d-flex align-items-center">
                     <?php if ($is_logged_in): ?>
-                        <span class="text-white me-3">Welcome, <?= htmlspecialchars($_SESSION['name'] ?? 'User') ?></span>
+                        <span class="navbar-text me-3">Hello, <?= htmlspecialchars($_SESSION['name'] ?? 'User') ?></span>
+                        <a href="dashboard.php" class="btn btn-kyu-alt me-2">Dashboard</a>
                         <a href="logout.php" class="btn btn-outline-light">Logout</a>
                     <?php else: ?>
                         <a href="login.php" class="btn btn-outline-light me-2">Login</a>
-                        <a href="register.php" class="btn btn-outline-light">Register</a>
+                        <a href="register.php" class="btn btn-kyu">Register</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -82,9 +86,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !empty($search_term)) {
             </div>
         </form>
 
-        <?php if ($message): ?>
-            <div class="alert alert-info text-center">
-                <?= htmlspecialchars($message) ?>
+        <?php if ($message && !$has_results): ?>
+            <div class="empty-state mx-auto" style="max-width: 560px;">
+                <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="32" cy="32" r="30" opacity="0.2" />
+                    <path d="M22 24h20M22 32h20M22 40h14" />
+                    <path d="M14 14l12 12" />
+                    <path d="M24 14l-12 12" />
+                </svg>
+                <h4 class="mb-2">No results found</h4>
+                <p class="text-muted mb-3"><?= htmlspecialchars($message) ?></p>
+                <div class="d-flex justify-content-center gap-2">
+                    <a href="search.php" class="btn btn-kyu">Try a new search</a>
+                    <a href="report-found.php" class="btn btn-kyu-alt">Report a found item</a>
+                </div>
             </div>
         <?php endif; ?>
 
@@ -137,5 +152,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !empty($search_term)) {
         </div>
     </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

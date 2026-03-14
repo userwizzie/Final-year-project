@@ -1,4 +1,228 @@
-/* basic stylesheet */
-body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-header { background: #333; color: white; padding: 1rem; text-align: center; }
-footer { background: #f1f1f1; text-align: center; padding: 0.5rem; }
+/* Kyambogo University Lost & Found custom styles */
+:root {
+    --kyu-blue: #003087;
+    --kyu-blue-dark: #002260;
+    --kyu-yellow: #ffcc00;
+    --kyu-gray: #f7f9fc;
+    --kyu-text: #20232a;
+    --card-shadow: 0 10px 28px rgba(0, 0, 0, 0.12);
+    --border-radius: 0.75rem;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: var(--kyu-gray);
+    color: var(--kyu-text);
+}
+
+a {
+    color: var(--kyu-blue);
+}
+
+a:hover {
+    color: var(--kyu-blue-dark);
+    text-decoration: none;
+}
+
+/* Navigation */
+.navbar-kyu {
+    background: linear-gradient(135deg, var(--kyu-blue), #005aba);
+}
+
+.navbar-kyu .navbar-brand {
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.navbar-kyu .nav-link,
+.navbar-kyu .navbar-text {
+    color: rgba(255,255,255,0.9);
+}
+
+.navbar-kyu .nav-link:hover {
+    color: #fff;
+}
+
+.btn-kyu {
+    background-color: var(--kyu-blue);
+    border-color: var(--kyu-blue);
+    color: #fff;
+}
+
+.btn-kyu:hover,
+.btn-kyu:focus {
+    background-color: var(--kyu-blue-dark);
+    border-color: var(--kyu-blue-dark);
+}
+
+.btn-kyu-alt {
+    background-color: var(--kyu-yellow);
+    border-color: var(--kyu-yellow);
+    color: #09122a;
+}
+
+.btn-kyu-alt:hover,
+.btn-kyu-alt:focus {
+    background-color: #e6b800;
+    border-color: #e6b800;
+}
+
+/* Cards */
+.card-modern {
+    border: 0;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+}
+
+.card-modern .card-header {
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.card-modern .card-footer {
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+
+/* Form sections */
+.form-section {
+    padding: 1.25rem;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 0.75rem;
+    background: #fff;
+    margin-bottom: 1.5rem;
+}
+
+.form-section h5 {
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.form-section + .form-section {
+    margin-top: -1rem;
+}
+
+/* Empty states */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    border-radius: var(--border-radius);
+    background: #fff;
+    border: 1px dashed rgba(0,0,0,0.12);
+}
+
+.empty-state svg {
+    width: 96px;
+    height: 96px;
+    margin-bottom: 1rem;
+    opacity: 0.8;
+}
+
+/* Data grid enhancements */
+.data-grid {
+    overflow-x: auto;
+}
+
+.data-grid table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 0.5rem;
+    font-family: inherit;
+}
+
+.data-grid thead th {
+    border-bottom: none;
+    color: rgba(0,0,0,0.7);
+    font-weight: 700;
+    background: transparent;
+}
+
+.data-grid tbody tr {
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 0.75rem;
+}
+
+.data-grid tbody tr:hover {
+    background: rgba(0, 88, 173, 0.06);
+}
+
+.data-grid td, .data-grid th {
+    border: none;
+    padding: 1rem 1.25rem;
+    vertical-align: middle;
+}
+
+/* Stepper */
+.stepper {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.stepper .step {
+    flex: 1;
+    min-width: 160px;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.stepper .step .bullet {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.stepper .step.active {
+    background: rgba(0, 88, 173, 0.12);
+    border-color: rgba(0, 88, 173, 0.25);
+}
+
+.stepper .step.done {
+    background: rgba(28, 140, 82, 0.12);
+    border-color: rgba(28, 140, 82, 0.25);
+}
+
+.stepper .step.done .bullet {
+    background: rgba(28, 140, 82, 0.15);
+    border-color: rgba(28, 140, 82, 0.3);
+}
+
+.stepper .step.rejected {
+    background: rgba(220, 53, 69, 0.12);
+    border-color: rgba(220, 53, 69, 0.25);
+}
+
+.stepper .step.rejected .bullet {
+    background: rgba(220, 53, 69, 0.15);
+    border-color: rgba(220, 53, 69, 0.3);
+}
+
+@media (max-width: 576px) {
+    .stepper .step {
+        min-width: 100%;
+    }
+}
+
+/* Consistent card image styling */
+.card-img-top {
+    height: 180px;
+    object-fit: cover;
+    border-radius: 0.75rem 0.75rem 0 0;
+}

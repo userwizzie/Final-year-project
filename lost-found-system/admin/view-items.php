@@ -26,14 +26,24 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Items - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/css/style.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-kyu shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="dashboard.php">Admin - Lost & Found KyU</a>
-            <div class="ms-auto">
-                <a href="dashboard.php" class="btn btn-outline-light me-2">Dashboard</a>
-                <a href="../logout.php" class="btn btn-outline-light">Logout</a>
+            <a class="navbar-brand" href="dashboard.php">KyU Lost & Found Admin</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav" aria-controls="adminNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="adminNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="verify-claims.php">Verify Claims</a></li>
+                    <li class="nav-item"><a class="nav-link" href="manage-users.php">Users</a></li>
+                </ul>
+                <div class="d-flex">
+                    <a href="../logout.php" class="btn btn-outline-light">Logout</a>
+                </div>
             </div>
         </div>
     </nav>
@@ -48,9 +58,9 @@ try {
         <?php if (empty($items)): ?>
             <div class="alert alert-secondary">No items to display.</div>
         <?php else: ?>
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead class="table-dark">
+            <div class="data-grid">
+                <table>
+                    <thead>
                         <tr>
                             <th>Type</th>
                             <th>Name</th>
@@ -76,5 +86,6 @@ try {
             </div>
         <?php endif; ?>
     </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
