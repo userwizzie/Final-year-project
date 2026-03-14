@@ -55,6 +55,7 @@ try {
                     <li class="nav-item"><a class="nav-link" href="verify-claims.php">Verify Claims</a></li>
                     <li class="nav-item"><a class="nav-link" href="view-items.php">Items</a></li>
                     <li class="nav-item"><a class="nav-link" href="manage-users.php">Users</a></li>
+                    <li class="nav-item"><a class="nav-link" href="manage-items.php">Manage Items</a></li>
                 </ul>
                 <div class="d-flex">
                     <a href="../logout.php" class="btn btn-outline-light">Logout</a>
@@ -111,7 +112,7 @@ try {
         </div>
 
         <div class="row g-4">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card text-center border-primary shadow">
                     <div class="card-body">
                         <h5 class="card-title">Verify Claims</h5>
@@ -121,7 +122,7 @@ try {
                 </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card text-center border-info shadow">
                     <div class="card-body">
                         <h5 class="card-title">View All Items</h5>
@@ -131,12 +132,22 @@ try {
                 </div>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card text-center border-warning shadow">
                     <div class="card-body">
                         <h5 class="card-title">Manage Users</h5>
                         <p class="card-text">List all registered accounts.</p>
                         <a href="manage-users.php" class="btn btn-warning text-dark">Go to Users</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card text-center border-danger shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">Manage Items</h5>
+                        <p class="card-text">Delete lost and found items.</p>
+                        <a href="manage-items.php" class="btn btn-danger">Go to Manage Items</a>
                     </div>
                 </div>
             </div>

@@ -1,20 +1,67 @@
 <?php
 require_once '../includes/config.php';
 
-// protect admin
+// Admin check
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login.php");
     exit;
 }
 
-try {
-    $stmt = $conn->query("SELECT user_id, name, email, role FROM users ORDER BY user_id DESC");
-    $users = $stmt->fetchAll();
-} catch (PDOException $e) {
-    $users = [];
-    $error = $e->getMessage();
+$message = '';
+$success = false;
+
+// Handle create user
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_user'])) {
+    $name     = trim($_POST['name'] ?? '');
+    $email    = trim($_POST['email'] ?? '');
+    $phone    = trim($_POST['phone'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $role     = $_POST['role'] ?? 'user';
+
+    if (empty($name) || empty($email) || empty($phone) || empty($password)) {
+        $message = "All fields are required.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $message = "Invalid email format.";
+    } elseif (strlen($password) < 6) {
+        $message = "Password must be at least 6 characters.";
+    } else {
+        // Check if email exists
+        $stmt = $conn->prepare("SELECT user_id FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+        if ($stmt->fetch()) {
+            $message = "Email already exists.";
+        } else {
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+            $stmt = $conn->prepare("INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, ?)");
+            if ($stmt->execute([$name, $email, $phone, $hashed_password, $role])) {
+                $success = true;
+                $message = "User created successfully.";
+            } else {
+                $message = "Error creating user.";
+            }
+        }
+    }
 }
+
+// Handle delete user
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_user'])) {
+    $user_id = (int)($_POST['user_id'] ?? 0);
+    if ($user_id > 0) {
+        $stmt = $conn->prepare("DELETE FROM users WHERE user_id = ?");
+        if ($stmt->execute([$user_id])) {
+            $success = true;
+            $message = "User deleted successfully.";
+        } else {
+            $message = "Error deleting user.";
+        }
+    }
+}
+
+// Fetch all users
+$stmt = $conn->query("SELECT user_id, name, email, phone, role FROM users ORDER BY name");
+$users = $stmt->fetchAll();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,51 +69,154 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Users - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../assets/css/style.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+    <nav class="navbar navbar-expand-lg navbar-kyu shadow-sm">
         <div class="container">
-            <a class="navbar-brand" href="dashboard.php">Admin - Lost & Found KyU</a>
-            <div class="ms-auto">
-                <a href="dashboard.php" class="btn btn-outline-light me-2">Dashboard</a>
-                <a href="../logout.php" class="btn btn-outline-light">Logout</a>
+            <a class="navbar-brand" href="dashboard.php">KyU Lost & Found Admin</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav" aria-controls="adminNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="adminNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="verify-claims.php">Verify Claims</a></li>
+                    <li class="nav-item"><a class="nav-link" href="view-items.php">Items</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="manage-users.php">Users</a></li>
+                    <li class="nav-item"><a class="nav-link" href="manage-items.php">Manage Items</a></li>
+                </ul>
+                <div class="d-flex">
+                    <a href="../logout.php" class="btn btn-outline-light">Logout</a>
+                </div>
             </div>
         </div>
     </nav>
 
     <div class="container mt-5">
-        <h2>Registered Users</h2>
+        <h2>Manage Users</h2>
 
-        <?php if (!empty($error)): ?>
-            <div class="alert alert-danger">Error loading users: <?= htmlspecialchars($error) ?></div>
-        <?php endif; ?>
-
-        <?php if (empty($users)): ?>
-            <div class="alert alert-secondary">No users registered yet.</div>
-        <?php else: ?>
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($users as $u): ?>
-                            <tr>
-                                <td><?= $u['user_id'] ?></td>
-                                <td><?= htmlspecialchars($u['name']) ?></td>
-                                <td><?= htmlspecialchars($u['email']) ?></td>
-                                <td><?= htmlspecialchars($u['role']) ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+        <?php if ($message): ?>
+            <div class="alert <?= $success ? 'alert-success' : 'alert-danger' ?> alert-dismissible fade show">
+                <?= htmlspecialchars($message) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         <?php endif; ?>
+
+        <!-- Create User Form -->
+        <div class="card card-modern mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Create New User</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Name</label>
+                            <input type="text" name="name" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Phone</label>
+                            <input type="text" name="phone" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Role</label>
+                            <select name="role" class="form-select">
+                                <option value="user">User</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-6">
+                            <label class="form-label">Password</label>
+                            <input type="password" name="password" class="form-control" required>
+                        </div>
+                    </div>
+                    <button type="submit" name="create_user" class="btn btn-kyu mt-3">Create User</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="card card-modern">
+            <div class="card-header">
+                <h5 class="mb-0">All Users</h5>
+            </div>
+            <div class="card-body">
+                <?php if (empty($users)): ?>
+                    <p>No users found.</p>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Role</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($users as $user): ?>
+                                    <tr>
+                                        <td><?= $user['user_id'] ?></td>
+                                        <td><?= htmlspecialchars($user['name']) ?></td>
+                                        <td><?= htmlspecialchars($user['email']) ?></td>
+                                        <td><?= htmlspecialchars($user['phone']) ?></td>
+                                        <td><span class="badge bg-secondary"><?= htmlspecialchars($user['role']) ?></span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-user-id="<?= $user['user_id'] ?>" data-user-name="<?= htmlspecialchars($user['name']) ?>">Delete</button>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete user "<span id="userName"></span>"? This action cannot be undone.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form method="POST" style="display: inline;">
+                        <input type="hidden" name="user_id" id="deleteUserId">
+                        <button type="submit" name="delete_user" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const deleteModal = document.getElementById('deleteModal');
+        deleteModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const userId = button.getAttribute('data-user-id');
+            const userName = button.getAttribute('data-user-name');
+            document.getElementById('deleteUserId').value = userId;
+            document.getElementById('userName').textContent = userName;
+        });
+    </script>
 </body>
 </html>
