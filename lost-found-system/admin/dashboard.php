@@ -53,6 +53,7 @@ try {
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item"><a class="nav-link active" href="dashboard.php">Dashboard</a></li>
                     <li class="nav-item"><a class="nav-link" href="verify-claims.php">Verify Claims</a></li>
+                    <li class="nav-item"><a class="nav-link" href="reports.php">Reports</a></li>
                     <li class="nav-item"><a class="nav-link" href="view-items.php">Manage Items</a></li>
                     <li class="nav-item"><a class="nav-link" href="manage-users.php">Users</a></li>
                 </ul>
@@ -117,6 +118,16 @@ try {
                         <h5 class="card-title">Verify Claims</h5>
                         <p class="card-text">Review and approve/reject ownership claims.</p>
                         <a href="verify-claims.php" class="btn btn-primary">Go to Claims</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card text-center border-success shadow h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Reports</h5>
+                        <p class="card-text">View analytics, statistics, and export data.</p>
+                        <a href="reports.php" class="btn btn-success">View Reports</a>
                     </div>
                 </div>
             </div>
