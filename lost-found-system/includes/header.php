@@ -14,6 +14,9 @@ $admin_items_link = $is_admin_page ? 'view-items.php' : 'admin/view-items.php';
 $admin_users_link = $is_admin_page ? 'manage-users.php' : 'admin/manage-users.php';
 $current_page     = basename($_SERVER['PHP_SELF'] ?? '');
 $show_quick_links = $is_logged_in && $current_page !== 'index.php';
+$favicon_version  = file_exists(__DIR__ . '/../assets/images/favicon.svg')
+    ? filemtime(__DIR__ . '/../assets/images/favicon.svg')
+    : time();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -25,11 +28,10 @@ $show_quick_links = $is_logged_in && $current_page !== 'index.php';
     <meta name="theme-color" content="#0d6efd">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="<?php echo $base_path; ?>assets/images/favicon.svg">
-    <link rel="icon" type="image/x-icon" href="<?php echo $base_path; ?>assets/images/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo $base_path; ?>assets/images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="<?php echo $base_path; ?>assets/images/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="<?php echo $base_path; ?>assets/images/apple-touch-icon.png">
+    <link rel="icon" type="image/svg+xml" sizes="any" href="<?php echo $base_path; ?>assets/images/favicon.svg?v=<?php echo $favicon_version; ?>">
+    <link rel="icon" type="image/png" sizes="96x96" href="<?php echo $base_path; ?>assets/images/favicon-96x96.png?v=<?php echo $favicon_version; ?>">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?php echo $base_path; ?>assets/images/apple-touch-icon.png?v=<?php echo $favicon_version; ?>">
+    <link rel="manifest" href="<?php echo $base_path; ?>assets/images/site.webmanifest?v=<?php echo $favicon_version; ?>">
 
     <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">

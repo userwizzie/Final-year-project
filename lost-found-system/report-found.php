@@ -124,6 +124,10 @@ $category_button_label = $category_value && isset($category_labels[$category_val
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Report Found Item | Lost & Found KyU</title>
+    <link rel="icon" type="image/svg+xml" sizes="any" href="assets/images/favicon.svg?v=20260317">
+    <link rel="icon" type="image/png" sizes="96x96" href="assets/images/favicon-96x96.png?v=20260317">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png?v=20260317">
+    <link rel="manifest" href="assets/images/site.webmanifest?v=20260317">
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -531,27 +535,37 @@ $category_button_label = $category_value && isset($category_labels[$category_val
         }
 
         function updateSteps() {
-            const hasDetails =
-                document.getElementById('item_name').value.trim() !== '' &&
-                descriptionInput.value.trim() !== '' &&
-                categoryInput.value.trim() !== '' &&
-                document.getElementById('date_found').value.trim() !== '';
-
+            const itemNameFilled = document.getElementById('item_name').value.trim() !== '';
+            const descriptionFilled = descriptionInput.value.trim() !== '';
+            const categoryFilled = categoryInput.value.trim() !== '';
+            const dateFilled = document.getElementById('date_found').value.trim() !== '';
+            const locationFilled = document.getElementById('location').value.trim() !== '';
             const hasPhoto = itemImageInput.files && itemImageInput.files.length > 0;
+
+            const requiredFilledCount = [itemNameFilled, descriptionFilled, categoryFilled, dateFilled]
+                .filter(Boolean).length;
+            const requiredRatio = requiredFilledCount / 4;
+
+            // Weighted progress: base + required fields + optional location + optional photo.
+            const progressValue = Math.min(
+                100,
+                Math.round(15 + (requiredRatio * 65) + (locationFilled ? 10 : 0) + (hasPhoto ? 10 : 0))
+            );
+
+            progressBar.style.width = progressValue + '%';
+            progressBar.setAttribute('aria-valuenow', String(progressValue));
 
             step1.classList.remove('active', 'done');
             step2.classList.remove('active', 'done');
             step3.classList.remove('active', 'done');
 
-            if (!hasDetails) {
+            if (requiredFilledCount < 4) {
                 step1.classList.add('active');
-                progressBar.style.width = '30%';
                 return;
             }
 
             step1.classList.add('done');
             step2.classList.add('active');
-            progressBar.style.width = hasPhoto ? '85%' : '66%';
 
             if (hasPhoto) {
                 step2.classList.remove('active');
