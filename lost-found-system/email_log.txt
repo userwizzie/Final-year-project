@@ -8,3 +8,14 @@ Thank you for registering with the Lost & Found system at Kyambogo University.
 You may now log in and start reporting items.
 [2026-03-14 20:11:56] To: admin@lostfound.local | Subject: New found item reported | Message: User #3 reported a new item (#Sweater).
 [2026-03-14 20:12:24] To: admin@lostfound.local | Subject: New claim submitted | Message: User #8 submitted a claim for found item #8.
+[2026-03-16 23:18:08] To: mark@naru.com | Subject: Reset Your Lost & Found Password | Message: Hello,
+
+You requested a password reset for your Lost & Found account.
+
+Click the link below to set a new password (valid for 1 hour):
+
+http://pilose-marlyn-septarian.ngrok-free.dev/PROJECT/lost-found-system/reset-password.php?token=d52e06e87c96d5b7134bfa28f3f03313c1ae500c60ddca12022151de73bf0991
+
+If you did not request this, you can safely ignore this email.
+
+— Kyambogo University Lost & Found

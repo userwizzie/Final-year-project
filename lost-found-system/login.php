@@ -43,7 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$logged_out = isset($_GET['logged_out']);
+$logged_out   = isset($_GET['logged_out']);
+$reset_success = isset($_GET['reset']) && $_GET['reset'] === '1';
 ?>
 
 <!DOCTYPE html>
@@ -280,6 +281,13 @@ $logged_out = isset($_GET['logged_out']);
                 <div class="auth-alert alert alert-info" role="alert">
                     <i class="fas fa-check-circle mt-1"></i>
                     <span>You have been signed out successfully.</span>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($reset_success): ?>
+                <div class="auth-alert alert alert-success" role="alert">
+                    <i class="fas fa-check-circle mt-1"></i>
+                    <span>Password reset successfully. You can now sign in with your new password.</span>
                 </div>
             <?php endif; ?>
 
