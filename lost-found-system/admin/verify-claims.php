@@ -2,10 +2,7 @@
 require_once '../includes/config.php';
 require_once '../includes/functions.php';
 
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../login.php");
-    exit;
-}
+require_admin();
 
 $message = '';
 
@@ -89,50 +86,21 @@ try {
     $claims = [];
     $message = "Error loading claims: " . $e->getMessage();
 }
-?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verify Claims - Admin</title>
-    <link href="../assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../assets/css/style.css" rel="stylesheet">
+$page_title = 'Verify Claims - Admin';
+require_once '../includes/header.php';
+?>
     <style>
         .proof-text { max-height: 80px; overflow: hidden; transition: max-height 0.3s; }
         .proof-text.expanded { max-height: 500px; }
         .toggle-proof { cursor: pointer; color: var(--kyu-blue); font-size: 0.9rem; }
     </style>
-</head>
-<body class="bg-light">
 
-    <nav class="navbar navbar-expand-lg navbar-kyu shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="dashboard.php">KyU Lost & Found Admin</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav" aria-controls="adminNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="adminNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="verify-claims.php">Verify Claims</a></li>
-                    <li class="nav-item"><a class="nav-link" href="view-items.php">Manage Items</a></li>
-                    <li class="nav-item"><a class="nav-link" href="manage-users.php">Users</a></li>
-                </ul>
-                <div class="d-flex">
-                    <a href="../logout.php" class="btn btn-outline-light">Logout</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+<h2 class="mb-4"><i class="fas fa-check-circle me-2"></i>Claim Verification</h2>
 
-    <div class="container mt-5">
-        <h2>Claim Verification</h2>
-
-        <?php if ($message): ?>
-            <div class="alert alert-info"><?= htmlspecialchars($message) ?></div>
-        <?php endif; ?>
+<?php if ($message): ?>
+    <div class="alert alert-info"><?= htmlspecialchars($message) ?></div>
+<?php endif; ?>
 
         <?php if (empty($claims)): ?>
             <div class="alert alert-secondary text-center py-4">
@@ -223,7 +191,6 @@ try {
         <div class="mt-4 text-center">
             <a href="dashboard.php" class="btn btn-secondary btn-lg px-5">Back to Admin Dashboard</a>
         </div>
-    </div>
 
     <!-- Item Details Modal -->
     <div class="modal fade" id="itemModal" tabindex="-1">
@@ -312,6 +279,5 @@ try {
             }
         });
     </script>
-    <script src="../assets/bootstrap/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+
+<?php require_once '../includes/footer.php'; ?>

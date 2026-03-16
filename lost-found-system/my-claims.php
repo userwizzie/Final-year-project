@@ -2,10 +2,7 @@
 require_once 'includes/config.php';
 
 // Protect page - must be logged in
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit;
-}
+require_user();
 
 $user_id = $_SESSION['user_id'];
 $name    = $_SESSION['name'] ?? 'User';

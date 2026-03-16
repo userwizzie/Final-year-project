@@ -1,10 +1,7 @@
 <?php
 require_once '../includes/config.php';
 
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../login.php");
-    exit;
-}
+require_admin();
 
 $message = '';
 $from_date = $_POST['from_date'] ?? date('Y-m-d', strtotime('-30 days'));
@@ -165,48 +162,17 @@ try {
 } catch (PDOException $e) {
     $message = "Error loading reports: " . $e->getMessage();
 }
+
+$page_title = 'Reports - Admin';
+require_once '../includes/header.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reports - Admin</title>
-    <link href="../assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .card { border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .chart-container { position: relative; height: 300px; }
-    </style>
-</head>
-<body class="bg-light">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    .chart-container { position: relative; height: 300px; }
+</style>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="dashboard.php">KyU Lost & Found Admin</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="adminNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="verify-claims.php">Verify Claims</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="reports.php">Reports</a></li>
-                    <li class="nav-item"><a class="nav-link" href="view-items.php">Manage Items</a></li>
-                    <li class="nav-item"><a class="nav-link" href="manage-users.php">Users</a></li>
-                </ul>
-                <div class="d-flex">
-                    <a href="../logout.php" class="btn btn-outline-light">Logout</a>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container mt-4">
-        <h2 class="mb-4"><i class="fas fa-chart-bar"></i> Reports</h2>
+<h2 class="mb-4"><i class="fas fa-chart-bar"></i> Reports</h2>
 
         <?php if ($message): ?>
             <div class="alert alert-danger"><?= htmlspecialchars($message) ?></div>
@@ -400,9 +366,7 @@ try {
                 </form>
             </div>
         </div>
-    </div>
 
-    <script src="../assets/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
         // Items Pie Chart
         const itemsCtx = document.getElementById('itemsChart').getContext('2d');
@@ -425,5 +389,5 @@ try {
             }
         });
     </script>
-</body>
-</html>
+
+<?php require_once '../includes/footer.php'; ?>

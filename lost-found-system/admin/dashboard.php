@@ -1,13 +1,10 @@
 <?php
 require_once '../includes/config.php';
 
-// Protect: must be logged in AND admin
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../login.php");
-    exit;
-}
+require_admin();
 
-$name = $_SESSION['name'] ?? 'Admin';
+$page_title = 'Admin Dashboard';
+require_once '../includes/header.php';
 
 // gather some summary stats
 try {
@@ -32,132 +29,107 @@ try {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Lost & Found</title>
-    <link href="../assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../assets/css/style.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+<h2 class="mb-4"><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</h2>
 
-    <nav class="navbar navbar-expand-lg navbar-kyu shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="dashboard.php">KyU Lost & Found Admin</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav" aria-controls="adminNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="adminNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link active" href="dashboard.php">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="verify-claims.php">Verify Claims</a></li>
-                    <li class="nav-item"><a class="nav-link" href="reports.php">Reports</a></li>
-                    <li class="nav-item"><a class="nav-link" href="view-items.php">Manage Items</a></li>
-                    <li class="nav-item"><a class="nav-link" href="manage-users.php">Users</a></li>
-                </ul>
-                <div class="d-flex">
-                    <a href="../logout.php" class="btn btn-outline-light">Logout</a>
-                </div>
+<!-- Summary Statistics -->
+<div class="row mb-5 g-4">
+    <div class="col-md-3 col-sm-6">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <i class="fas fa-clock fa-2x text-warning mb-3"></i>
+                <h6 class="card-subtitle mb-2 text-muted">Pending Claims</h6>
+                <h3 class="text-warning"><?= number_format($stats['pending_claims'] ?? 0) ?></h3>
             </div>
         </div>
-    </nav>
-
-    <div class="container mt-5">
-        <h2 class="mb-4">Admin Dashboard</h2>
-
-        <!-- summary statistics -->
-        <div class="row mb-5 g-4">
-            <div class="col-md-3 col-sm-6">
-                <div class="card text-center border-secondary shadow-sm h-100">
-                    <div class="card-body">
-                        <h6 class="card-subtitle mb-2 text-muted">Pending Claims</h6>
-                        <h3><?= number_format($stats['pending_claims'] ?? 0) ?></h3>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="card text-center border-secondary shadow-sm h-100">
-                    <div class="card-body">
-                        <h6 class="card-subtitle mb-2 text-muted">Users</h6>
-                        <h3><?= number_format($stats['total_users'] ?? 0) ?></h3>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="card text-center border-secondary shadow-sm h-100">
-                    <div class="card-body">
-                        <h6 class="card-subtitle mb-2 text-muted">Lost Items</h6>
-                        <h3><?= number_format($stats['lost_count'] ?? 0) ?></h3>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="card text-center border-secondary shadow-sm h-100">
-                    <div class="card-body">
-                        <h6 class="card-subtitle mb-2 text-muted">Found Items</h6>
-                        <h3><?= number_format($stats['found_count'] ?? 0) ?></h3>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="card text-center border-secondary shadow-sm h-100">
-                    <div class="card-body">
-                        <h6 class="card-subtitle mb-2 text-muted">Rewards Given</h6>
-                        <h3><?= number_format($stats['total_rewards'] ?? 0) ?></h3>
-                    </div>
-                </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <i class="fas fa-users fa-2x text-primary mb-3"></i>
+                <h6 class="card-subtitle mb-2 text-muted">Total Users</h6>
+                <h3 class="text-primary"><?= number_format($stats['total_users'] ?? 0) ?></h3>
             </div>
         </div>
-
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card text-center border-primary shadow h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Verify Claims</h5>
-                        <p class="card-text">Review and approve/reject ownership claims.</p>
-                        <a href="verify-claims.php" class="btn btn-primary">Go to Claims</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card text-center border-success shadow h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Reports</h5>
-                        <p class="card-text">View analytics, statistics, and export data.</p>
-                        <a href="reports.php" class="btn btn-success">View Reports</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card text-center border-info shadow h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Manage Items</h5>
-                        <p class="card-text">View and delete lost and found reports.</p>
-                        <a href="view-items.php" class="btn btn-info text-white">Go to Items</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card text-center border-warning shadow h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Manage Users</h5>
-                        <p class="card-text">List all registered accounts.</p>
-                        <a href="manage-users.php" class="btn btn-warning text-dark">Go to Users</a>
-                    </div>
-                </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <i class="fas fa-exclamation-triangle fa-2x text-danger mb-3"></i>
+                <h6 class="card-subtitle mb-2 text-muted">Lost Items</h6>
+                <h3 class="text-danger"><?= number_format($stats['lost_count'] ?? 0) ?></h3>
             </div>
         </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <i class="fas fa-plus-circle fa-2x text-success mb-3"></i>
+                <h6 class="card-subtitle mb-2 text-muted">Found Items</h6>
+                <h3 class="text-success"><?= number_format($stats['found_count'] ?? 0) ?></h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <i class="fas fa-gift fa-2x text-info mb-3"></i>
+                <h6 class="card-subtitle mb-2 text-muted">Rewards Given</h6>
+                <h3 class="text-info"><?= number_format($stats['total_rewards'] ?? 0) ?></h3>
+            </div>
+        </div>
+    </div>
+</div>
 
-        <div class="alert alert-info mt-5">
-            <strong>Tip:</strong> Start by checking pending claims in the "Verify Claims" section.
+<!-- Action Cards -->
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <i class="fas fa-check-circle fa-2x text-primary mb-3"></i>
+                <h5 class="card-title">Verify Claims</h5>
+                <p class="card-text">Review and approve/reject ownership claims.</p>
+                <a href="verify-claims.php" class="btn btn-primary"><i class="fas fa-arrow-right me-1"></i>Go to Claims</a>
+            </div>
         </div>
     </div>
 
-    <script src="../assets/bootstrap/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    <div class="col-md-4">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <i class="fas fa-chart-bar fa-2x text-success mb-3"></i>
+                <h5 class="card-title">Reports</h5>
+                <p class="card-text">View analytics, statistics, and export data.</p>
+                <a href="reports.php" class="btn btn-success"><i class="fas fa-arrow-right me-1"></i>View Reports</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <i class="fas fa-boxes fa-2x text-info mb-3"></i>
+                <h5 class="card-title">Manage Items</h5>
+                <p class="card-text">View and delete lost and found reports.</p>
+                <a href="view-items.php" class="btn btn-info text-white"><i class="fas fa-arrow-right me-1"></i>Go to Items</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <i class="fas fa-users-cog fa-2x text-warning mb-3"></i>
+                <h5 class="card-title">Manage Users</h5>
+                <p class="card-text">List all registered accounts.</p>
+                <a href="manage-users.php" class="btn btn-warning text-dark"><i class="fas fa-arrow-right me-1"></i>Go to Users</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Tips -->
+<div class="alert alert-info mt-5">
+    <i class="fas fa-lightbulb me-2"></i><strong>Tip:</strong> Start by checking pending claims in the "Verify Claims" section to help reunite items with their owners.
+</div>
+
+<?php require_once '../includes/footer.php'; ?>

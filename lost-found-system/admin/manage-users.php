@@ -1,11 +1,7 @@
 <?php
 require_once '../includes/config.php';
 
-// Admin check
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../login.php");
-    exit;
-}
+require_admin();
 
 $message = '';
 $success = false;
@@ -60,41 +56,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_user'])) {
 // Fetch all users
 $stmt = $conn->query("SELECT user_id, name, email, phone, role FROM users ORDER BY name");
 $users = $stmt->fetchAll();
+
+$page_title = 'Manage Users - Admin';
+require_once '../includes/header.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Users - Admin</title>
-    <link href="../assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../assets/css/style.css" rel="stylesheet">
-</head>
-<body class="bg-light">
-
-    <nav class="navbar navbar-expand-lg navbar-kyu shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="dashboard.php">KyU Lost & Found Admin</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav" aria-controls="adminNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="adminNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" href="verify-claims.php">Verify Claims</a></li>
-                    <li class="nav-item"><a class="nav-link" href="view-items.php">Manage Items</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="manage-users.php">Users</a></li>
-                </ul>
-                <div class="d-flex">
-                    <a href="../logout.php" class="btn btn-outline-light">Logout</a>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container mt-5">
-        <h2>Manage Users</h2>
+<h2 class="mb-4"><i class="fas fa-users me-2"></i>Manage Users</h2>
 
         <?php if ($message): ?>
             <div class="alert <?= $success ? 'alert-success' : 'alert-danger' ?> alert-dismissible fade show">
@@ -182,7 +149,6 @@ $users = $stmt->fetchAll();
                 <?php endif; ?>
             </div>
         </div>
-    </div>
 
     <!-- Delete Confirmation Modal -->
     <div class="modal fade" id="deleteModal" tabindex="-1">
@@ -206,7 +172,6 @@ $users = $stmt->fetchAll();
         </div>
     </div>
 
-    <script src="../assets/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
         const deleteModal = document.getElementById('deleteModal');
         deleteModal.addEventListener('show.bs.modal', function (event) {
@@ -217,5 +182,5 @@ $users = $stmt->fetchAll();
             document.getElementById('userName').textContent = userName;
         });
     </script>
-</body>
-</html>
+
+<?php require_once '../includes/footer.php'; ?>
