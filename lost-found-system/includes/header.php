@@ -13,6 +13,7 @@ $admin_reports_link = $is_admin_page ? 'reports.php' : 'admin/reports.php';
 $admin_items_link = $is_admin_page ? 'view-items.php' : 'admin/view-items.php';
 $admin_users_link = $is_admin_page ? 'manage-users.php' : 'admin/manage-users.php';
 $current_page     = basename($_SERVER['PHP_SELF'] ?? '');
+$show_quick_links = $is_logged_in && $current_page !== 'index.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -24,10 +25,11 @@ $current_page     = basename($_SERVER['PHP_SELF'] ?? '');
     <meta name="theme-color" content="#0d6efd">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/svg+xml" href="<?php echo $base_path; ?>assets/images/favicon.svg">
+    <link rel="icon" type="image/x-icon" href="<?php echo $base_path; ?>assets/images/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo $base_path; ?>assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?php echo $base_path; ?>assets/images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?php echo $base_path; ?>assets/images/apple-touch-icon.png">
 
     <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -56,7 +58,10 @@ $current_page     = basename($_SERVER['PHP_SELF'] ?? '');
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--light-bg);
+            background:
+                radial-gradient(circle at 0% 0%, rgba(13,110,253,0.14), transparent 36%),
+                radial-gradient(circle at 100% 100%, rgba(13,110,253,0.08), transparent 40%),
+                var(--light-bg);
             color: #333;
         }
 
@@ -79,6 +84,31 @@ $current_page     = basename($_SERVER['PHP_SELF'] ?? '');
         .btn {
             border-radius: var(--border-radius);
             font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            border: none;
+            box-shadow: 0 6px 16px rgba(13, 110, 253, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(13, 110, 253, 0.35);
+            background: linear-gradient(135deg, #0d6efd 0%, #084298 100%);
+        }
+
+        .btn-outline-primary {
+            color: #0d6efd;
+            border-color: #0d6efd;
+        }
+
+        .btn-outline-primary:hover {
+            background: #0d6efd;
+            border-color: #0d6efd;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(13, 110, 253, 0.25);
         }
 
         .quicklinks-trigger {
@@ -185,11 +215,38 @@ $current_page     = basename($_SERVER['PHP_SELF'] ?? '');
         .brand-text small { font-size: 0.58em; letter-spacing: 0.07em; opacity: 0.85; }
 
         /* ── Active nav-link underline indicator ── */
-        .navbar-dark .nav-link.active { color: #fff !important; font-weight: 600; }
+        .navbar-dark .nav-link { 
+            color: rgba(255,255,255,0.8) !important; 
+            transition: color 0.3s ease, padding 0.3s ease;
+            position: relative;
+            padding-bottom: 0.5rem !important;
+        }
+
+        .navbar-dark .nav-link:hover { 
+            color: #fff !important;
+        }
+
+        .navbar-dark .nav-link.active { 
+            color: #fff !important; 
+            font-weight: 600;
+        }
+
         .navbar-dark .nav-link.active::after {
-            content: ''; display: block;
-            height: 2px; background: rgba(255,255,255,0.85);
-            border-radius: 2px; margin-top: 2px;
+            content: ''; 
+            display: block;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2.5px; 
+            background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));
+            border-radius: 2px 2px 0 0;
+            animation: slideIn 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+        }
+
+        @keyframes slideIn {
+            from { width: 0; left: 50%; }
+            to { width: 100%; left: 0; }
         }
 
         /* ── Sidebar collapse controls ── */
@@ -269,9 +326,11 @@ $current_page     = basename($_SERVER['PHP_SELF'] ?? '');
                 </ul>
                 <div class="d-flex align-items-center">
                     <?php if ($is_logged_in): ?>
-                        <button class="btn quicklinks-trigger btn-sm me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#quickLinksPanel" aria-controls="quickLinksPanel" aria-label="Open quick links menu">
-                            <i class="fas fa-bars me-1"></i>Quick Links
-                        </button>
+                        <?php if ($show_quick_links): ?>
+                            <button class="btn quicklinks-trigger btn-sm me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#quickLinksPanel" aria-controls="quickLinksPanel" aria-label="Open quick links menu">
+                                <i class="fas fa-bars me-1"></i>Quick Links
+                            </button>
+                        <?php endif; ?>
                         <span class="text-light me-3">
                             <i class="fas fa-user me-1"></i><?php echo htmlspecialchars($_SESSION['name'] ?? 'User'); ?>
                         </span>
@@ -291,7 +350,7 @@ $current_page     = basename($_SERVER['PHP_SELF'] ?? '');
         </div>
     </nav>
 
-    <?php if ($is_logged_in): ?>
+    <?php if ($show_quick_links): ?>
         <button class="btn btn-primary quicklinks-fab d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#quickLinksPanel" aria-controls="quickLinksPanel" aria-label="Open quick links menu">
             <i class="fas fa-bars me-1"></i>Menu
         </button>
