@@ -13,6 +13,6 @@ session_unset();
 session_destroy();
 session_regenerate_id(true);
 
-header("Location: login.php?logged_out=1&t=" . time());
+header("Location: index.php");
 exit;
 ?>
