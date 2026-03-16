@@ -13,7 +13,6 @@ $admin_reports_link = $is_admin_page ? 'reports.php' : 'admin/reports.php';
 $admin_items_link = $is_admin_page ? 'view-items.php' : 'admin/view-items.php';
 $admin_users_link = $is_admin_page ? 'manage-users.php' : 'admin/manage-users.php';
 $current_page     = basename($_SERVER['PHP_SELF'] ?? '');
-$show_quick_links = $is_logged_in && $current_page !== 'index.php';
 $favicon_version  = file_exists(__DIR__ . '/../assets/images/favicon.svg')
     ? filemtime(__DIR__ . '/../assets/images/favicon.svg')
     : time();
@@ -111,98 +110,6 @@ $favicon_version  = file_exists(__DIR__ . '/../assets/images/favicon.svg')
             border-color: #0d6efd;
             transform: translateY(-1px);
             box-shadow: 0 6px 16px rgba(13, 110, 253, 0.25);
-        }
-
-        .quicklinks-trigger {
-            border-radius: 999px;
-            border: 1px solid rgba(255,255,255,0.45);
-            background: rgba(255,255,255,0.12);
-            color: #fff;
-            font-weight: 600;
-            padding: 0.38rem 0.8rem;
-        }
-
-        .quicklinks-trigger:hover,
-        .quicklinks-trigger:focus {
-            color: #fff;
-            background: rgba(255,255,255,0.2);
-            border-color: rgba(255,255,255,0.7);
-        }
-
-        .quicklinks-fab {
-            position: fixed;
-            right: 1rem;
-            bottom: 1rem;
-            z-index: 1040;
-            border-radius: 999px;
-            box-shadow: 0 12px 28px rgba(13, 110, 253, 0.35);
-            padding: 0.65rem 0.95rem;
-            font-weight: 600;
-        }
-
-        .quicklinks-panel {
-            width: min(380px, 92vw);
-            border-left: 1px solid rgba(13, 110, 253, 0.1);
-            box-shadow: -18px 0 38px rgba(8, 16, 38, 0.25);
-            background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
-        }
-
-        .quicklinks-header {
-            background: linear-gradient(130deg, #0a2b63 0%, #0d6efd 100%);
-            color: #fff;
-            padding: 1rem 1.05rem;
-        }
-
-        .quicklinks-header .btn-close {
-            filter: invert(1) brightness(2);
-            opacity: 0.9;
-        }
-
-        .quicklinks-list .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 0.65rem;
-            border-radius: 0.7rem;
-            color: #20314d;
-            font-weight: 500;
-            padding: 0.72rem 0.8rem;
-            margin-bottom: 0.35rem;
-            transition: transform 0.15s, background-color 0.15s, color 0.15s;
-        }
-
-        .quicklinks-list .nav-link i {
-            width: 18px;
-            text-align: center;
-            color: #47648f;
-        }
-
-        .quicklinks-list .nav-link:hover {
-            background: rgba(13, 110, 253, 0.08);
-            color: #0d6efd;
-            transform: translateX(2px);
-        }
-
-        .quicklinks-list .nav-link.active {
-            background: rgba(13, 110, 253, 0.14);
-            color: #0d6efd;
-            font-weight: 600;
-        }
-
-        .quicklinks-list .nav-link.active i {
-            color: #0d6efd;
-        }
-
-        .offcanvas-backdrop.show {
-            opacity: 0.55;
-            backdrop-filter: blur(2px);
-        }
-
-        @media (max-width: 991.98px) {
-            .quicklinks-panel {
-                width: 100vw;
-                max-width: 100vw;
-                border-left: none;
-            }
         }
 
         /* ── Branded navbar logo ── */
@@ -328,11 +235,6 @@ $favicon_version  = file_exists(__DIR__ . '/../assets/images/favicon.svg')
                 </ul>
                 <div class="d-flex align-items-center">
                     <?php if ($is_logged_in): ?>
-                        <?php if ($show_quick_links): ?>
-                            <button class="btn quicklinks-trigger btn-sm me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#quickLinksPanel" aria-controls="quickLinksPanel" aria-label="Open quick links menu">
-                                <i class="fas fa-bars me-1"></i>Quick Links
-                            </button>
-                        <?php endif; ?>
                         <span class="text-light me-3">
                             <i class="fas fa-user me-1"></i><?php echo htmlspecialchars($_SESSION['name'] ?? 'User'); ?>
                         </span>
@@ -351,39 +253,6 @@ $favicon_version  = file_exists(__DIR__ . '/../assets/images/favicon.svg')
             </div>
         </div>
     </nav>
-
-    <?php if ($show_quick_links): ?>
-        <button class="btn btn-primary quicklinks-fab d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#quickLinksPanel" aria-controls="quickLinksPanel" aria-label="Open quick links menu">
-            <i class="fas fa-bars me-1"></i>Menu
-        </button>
-
-        <div class="offcanvas offcanvas-end quicklinks-panel" tabindex="-1" id="quickLinksPanel" aria-labelledby="quickLinksTitle" data-bs-scroll="false" data-bs-backdrop="true">
-            <div class="quicklinks-header d-flex align-items-center justify-content-between">
-                <div>
-                    <h5 class="mb-0" id="quickLinksTitle"><i class="fas fa-compass me-2"></i>Quick Links</h5>
-                    <small class="opacity-75">Navigate faster</small>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body">
-                <nav class="quicklinks-list nav flex-column" aria-label="Quick links navigation">
-                    <?php if ($is_admin_page && $is_admin_user): ?>
-                        <a class="nav-link <?php echo $current_page==='dashboard.php' ? 'active' : ''; ?>" href="dashboard.php"><i class="fas fa-home"></i>Dashboard</a>
-                        <a class="nav-link <?php echo $current_page==='verify-claims.php' ? 'active' : ''; ?>" href="verify-claims.php"><i class="fas fa-check-circle"></i>Verify Claims</a>
-                        <a class="nav-link <?php echo $current_page==='reports.php' ? 'active' : ''; ?>" href="reports.php"><i class="fas fa-chart-line"></i>Reports</a>
-                        <a class="nav-link <?php echo $current_page==='view-items.php' ? 'active' : ''; ?>" href="view-items.php"><i class="fas fa-box-open"></i>Manage Items</a>
-                        <a class="nav-link <?php echo $current_page==='manage-users.php' ? 'active' : ''; ?>" href="manage-users.php"><i class="fas fa-users"></i>Manage Users</a>
-                    <?php else: ?>
-                        <a class="nav-link <?php echo $current_page==='dashboard.php' ? 'active' : ''; ?>" href="<?php echo $base_path; ?>dashboard.php"><i class="fas fa-home"></i>Dashboard</a>
-                        <a class="nav-link <?php echo $current_page==='report-lost.php' ? 'active' : ''; ?>" href="<?php echo $base_path; ?>report-lost.php"><i class="fas fa-exclamation-triangle"></i>Report Lost Item</a>
-                        <a class="nav-link <?php echo $current_page==='report-found.php' ? 'active' : ''; ?>" href="<?php echo $base_path; ?>report-found.php"><i class="fas fa-hand-holding-heart"></i>Report Found Item</a>
-                        <a class="nav-link <?php echo $current_page==='search.php' ? 'active' : ''; ?>" href="<?php echo $base_path; ?>search.php"><i class="fas fa-search"></i>Search Items</a>
-                        <a class="nav-link <?php echo $current_page==='my-claims.php' ? 'active' : ''; ?>" href="<?php echo $base_path; ?>my-claims.php"><i class="fas fa-clipboard-check"></i>My Claims</a>
-                    <?php endif; ?>
-                </nav>
-            </div>
-        </div>
-    <?php endif; ?>
 
     <div class="container mt-4">
         <div class="row">

@@ -160,16 +160,6 @@ $is_admin_user = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
             });
         });
 
-        // Auto-close quick-links offcanvas when a navigation link is selected
-        const quickLinksPanel = document.getElementById('quickLinksPanel');
-        if (quickLinksPanel) {
-            quickLinksPanel.querySelectorAll('.quicklinks-list .nav-link').forEach((link) => {
-                link.addEventListener('click', () => {
-                    const instance = bootstrap.Offcanvas.getOrCreateInstance(quickLinksPanel);
-                    instance.hide();
-                });
-            });
-        }
     </script>
 </body>
 </html>
