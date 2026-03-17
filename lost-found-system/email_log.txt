@@ -19,3 +19,18 @@ http://pilose-marlyn-septarian.ngrok-free.dev/PROJECT/lost-found-system/reset-pa
 If you did not request this, you can safely ignore this email.
 
 — Kyambogo University Lost & Found
+[2026-03-17 08:21:19] To: admin@lostfound.local | Subject: New found item reported | Message: User #4 reported a new item (#earphone).
+[2026-03-17 08:22:22] To: admin@lostfound.local | Subject: New claim submitted | Message: User #6 submitted a claim for found item #9.
+[2026-03-17 08:33:37] To: wizzy@naru.com | Subject: Your claim was approved | Message: Hello wizzy,
+
+Your claim (#9) has been approved.
+[2026-03-17 08:33:39] To: test@test.com | Subject: Reward issued | Message: Hello test 2,
+
+Your item claim was approved and 100 points have been awarded.
+[2026-03-17 08:35:34] To: admin@lostfound.local | Subject: New claim submitted | Message: User #6 submitted a claim for found item #5.
+[2026-03-17 08:36:08] To: lucky@paul.com | Subject: Your claim was approved | Message: Hello Paul Lucky,
+
+Your claim (#11) has been approved.
+[2026-03-17 08:36:10] To: mark@naru.com | Subject: Reward issued | Message: Hello Mark,
+
+Your item claim was approved and 100 points have been awarded.

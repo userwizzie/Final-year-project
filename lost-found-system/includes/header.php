@@ -6,6 +6,7 @@ $is_admin_page = strpos($_SERVER['PHP_SELF'] ?? '', '/admin/') !== false;
 $base_path = $base_path ?? ($is_admin_page ? '../' : '');
 $is_logged_in = isset($_SESSION['user_id']);
 $is_admin_user = $is_logged_in && (($_SESSION['role'] ?? '') === 'admin');
+$minimal_header_view = !empty($minimal_header_view);
 
 $admin_dashboard_link = $is_admin_page ? 'dashboard.php' : 'admin/dashboard.php';
 $admin_verify_link = $is_admin_page ? 'verify-claims.php' : 'admin/verify-claims.php';
@@ -199,58 +200,60 @@ $favicon_version  = file_exists(__DIR__ . '/../assets/images/favicon.svg')
                     </div>
                 </a>
             <?php endif; ?>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="mainNav">
-                <ul class="navbar-nav me-auto">
-                    <?php if ($is_admin_page && $is_admin_user): ?>
-                        <li class="nav-item"><a class="nav-link <?php echo $current_page==='dashboard.php'?'active':''; ?>" href="dashboard.php"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link <?php echo $current_page==='verify-claims.php'?'active':''; ?>" href="verify-claims.php"><i class="fas fa-check-circle me-1"></i>Verify Claims</a></li>
-                        <li class="nav-item"><a class="nav-link <?php echo $current_page==='reports.php'?'active':''; ?>" href="reports.php"><i class="fas fa-chart-bar me-1"></i>Reports</a></li>
-                        <li class="nav-item"><a class="nav-link <?php echo $current_page==='view-items.php'?'active':''; ?>" href="view-items.php"><i class="fas fa-boxes me-1"></i>Items</a></li>
-                        <li class="nav-item"><a class="nav-link <?php echo $current_page==='manage-users.php'?'active':''; ?>" href="manage-users.php"><i class="fas fa-users me-1"></i>Users</a></li>
-                    <?php else: ?>
-                        <li class="nav-item"><a class="nav-link <?php echo $current_page==='index.php'?'active':''; ?>" href="<?php echo $base_path; ?>index.php"><i class="fas fa-home me-1"></i>Home</a></li>
-                        <li class="nav-item"><a class="nav-link <?php echo $current_page==='search.php'?'active':''; ?>" href="<?php echo $base_path; ?>search.php"><i class="fas fa-search me-1"></i>Search</a></li>
-                        <?php if ($is_logged_in): ?>
-                            <li class="nav-item"><a class="nav-link <?php echo $current_page==='dashboard.php'?'active':''; ?>" href="<?php echo $base_path; ?>dashboard.php"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a></li>
-                            <li class="nav-item"><a class="nav-link <?php echo $current_page==='my-claims.php'?'active':''; ?>" href="<?php echo $base_path; ?>my-claims.php"><i class="fas fa-list me-1"></i>My Claims</a></li>
-                            <?php if ($is_admin_user): ?>
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
-                                        <i class="fas fa-cog"></i> Admin
-                                    </a>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="<?php echo $admin_dashboard_link; ?>"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</a></li>
-                                        <li><a class="dropdown-item" href="<?php echo $admin_verify_link; ?>"><i class="fas fa-check-circle"></i> Verify Claims</a></li>
-                                        <li><a class="dropdown-item" href="<?php echo $admin_reports_link; ?>"><i class="fas fa-chart-bar"></i> Reports</a></li>
-                                        <li><a class="dropdown-item" href="<?php echo $admin_items_link; ?>"><i class="fas fa-boxes"></i> Manage Items</a></li>
-                                        <li><a class="dropdown-item" href="<?php echo $admin_users_link; ?>"><i class="fas fa-users"></i> Manage Users</a></li>
-                                    </ul>
-                                </li>
+            <?php if (!$minimal_header_view): ?>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav me-auto">
+                        <?php if ($is_admin_page && $is_admin_user): ?>
+                            <li class="nav-item"><a class="nav-link <?php echo $current_page==='dashboard.php'?'active':''; ?>" href="dashboard.php"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a></li>
+                            <li class="nav-item"><a class="nav-link <?php echo $current_page==='verify-claims.php'?'active':''; ?>" href="verify-claims.php"><i class="fas fa-check-circle me-1"></i>Verify Claims</a></li>
+                            <li class="nav-item"><a class="nav-link <?php echo $current_page==='reports.php'?'active':''; ?>" href="reports.php"><i class="fas fa-chart-bar me-1"></i>Reports</a></li>
+                            <li class="nav-item"><a class="nav-link <?php echo $current_page==='view-items.php'?'active':''; ?>" href="view-items.php"><i class="fas fa-boxes me-1"></i>Items</a></li>
+                            <li class="nav-item"><a class="nav-link <?php echo $current_page==='manage-users.php'?'active':''; ?>" href="manage-users.php"><i class="fas fa-users me-1"></i>Users</a></li>
+                        <?php else: ?>
+                            <li class="nav-item"><a class="nav-link <?php echo $current_page==='index.php'?'active':''; ?>" href="<?php echo $base_path; ?>index.php"><i class="fas fa-home me-1"></i>Home</a></li>
+                            <li class="nav-item"><a class="nav-link <?php echo $current_page==='search.php'?'active':''; ?>" href="<?php echo $base_path; ?>search.php"><i class="fas fa-search me-1"></i>Search</a></li>
+                            <?php if ($is_logged_in): ?>
+                                <li class="nav-item"><a class="nav-link <?php echo $current_page==='dashboard.php'?'active':''; ?>" href="<?php echo $base_path; ?>dashboard.php"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a></li>
+                                <li class="nav-item"><a class="nav-link <?php echo $current_page==='my-claims.php'?'active':''; ?>" href="<?php echo $base_path; ?>my-claims.php"><i class="fas fa-list me-1"></i>My Claims</a></li>
+                                <?php if ($is_admin_user): ?>
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+                                            <i class="fas fa-cog"></i> Admin
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="<?php echo $admin_dashboard_link; ?>"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</a></li>
+                                            <li><a class="dropdown-item" href="<?php echo $admin_verify_link; ?>"><i class="fas fa-check-circle"></i> Verify Claims</a></li>
+                                            <li><a class="dropdown-item" href="<?php echo $admin_reports_link; ?>"><i class="fas fa-chart-bar"></i> Reports</a></li>
+                                            <li><a class="dropdown-item" href="<?php echo $admin_items_link; ?>"><i class="fas fa-boxes"></i> Manage Items</a></li>
+                                            <li><a class="dropdown-item" href="<?php echo $admin_users_link; ?>"><i class="fas fa-users"></i> Manage Users</a></li>
+                                        </ul>
+                                    </li>
+                                <?php endif; ?>
                             <?php endif; ?>
                         <?php endif; ?>
-                    <?php endif; ?>
-                </ul>
-                <div class="d-flex align-items-center">
-                    <?php if ($is_logged_in): ?>
-                        <span class="text-light me-3">
-                            <i class="fas fa-user me-1"></i><?php echo htmlspecialchars($_SESSION['name'] ?? 'User'); ?>
-                        </span>
-                        <a href="<?php echo $base_path; ?>logout.php" class="btn btn-outline-light btn-sm">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </a>
-                    <?php else: ?>
-                        <a href="<?php echo $base_path; ?>login.php" class="btn btn-outline-light btn-sm me-2">
-                            <i class="fas fa-sign-in-alt"></i> Login
-                        </a>
-                        <a href="<?php echo $base_path; ?>register.php" class="btn btn-light btn-sm">
-                            <i class="fas fa-user-plus"></i> Register
-                        </a>
-                    <?php endif; ?>
+                    </ul>
+                    <div class="d-flex align-items-center">
+                        <?php if ($is_logged_in): ?>
+                            <span class="text-light me-3">
+                                <i class="fas fa-user me-1"></i><?php echo htmlspecialchars($_SESSION['name'] ?? 'User'); ?>
+                            </span>
+                            <a href="<?php echo $base_path; ?>logout.php" class="btn btn-outline-light btn-sm">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        <?php else: ?>
+                            <a href="<?php echo $base_path; ?>login.php" class="btn btn-outline-light btn-sm me-2">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </a>
+                            <a href="<?php echo $base_path; ?>register.php" class="btn btn-light btn-sm">
+                                <i class="fas fa-user-plus"></i> Register
+                            </a>
+                        <?php endif; ?>
+                    </div>
                 </div>
-            </div>
+            <?php endif; ?>
         </div>
     </nav>
 

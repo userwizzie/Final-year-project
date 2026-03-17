@@ -168,6 +168,27 @@ $reset_success = isset($_GET['reset']) && $_GET['reset'] === '1';
             padding: 0.7rem 1rem; border: none; margin-bottom: 1.2rem;
             display: flex; align-items: flex-start; gap: 0.5rem;
         }
+        .auth-alert-popup {
+            position: fixed;
+            top: 1rem;
+            left: 50%;
+            transform: translate(-50%, -140%);
+            z-index: 1080;
+            width: min(92vw, 640px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+            animation: authPopupDrop 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            margin-bottom: 0;
+        }
+        @keyframes authPopupDrop {
+            from {
+                transform: translate(-50%, -150%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
+        }
         .auth-alert.alert-danger  { background: #fff0f0; color: #b91c1c; }
         .auth-alert.alert-success { background: #f0fff5; color: #166534; }
         .auth-alert.alert-info    { background: #eff8ff; color: #1d5f8a; }
@@ -248,6 +269,10 @@ $reset_success = isset($_GET['reset']) && $_GET['reset'] === '1';
 
         @media (max-width: 480px) {
             body { padding: 0.75rem; }
+            .auth-alert-popup {
+                top: 0.75rem;
+                width: calc(100vw - 1rem);
+            }
             .auth-header { padding: 2rem 1.5rem 1.75rem; }
             .auth-body   { padding: 1.5rem; }
             .auth-footer { padding: 1rem 1.5rem; }
@@ -278,21 +303,21 @@ $reset_success = isset($_GET['reset']) && $_GET['reset'] === '1';
             <p class="auth-subtitle">Sign in to your account</p>
 
             <?php if ($logged_out): ?>
-                <div class="auth-alert alert alert-info" role="alert">
+                <div class="auth-alert auth-alert-popup alert alert-info" role="alert">
                     <i class="fas fa-check-circle mt-1"></i>
                     <span>You have been signed out successfully.</span>
                 </div>
             <?php endif; ?>
 
             <?php if ($reset_success): ?>
-                <div class="auth-alert alert alert-success" role="alert">
+                <div class="auth-alert auth-alert-popup alert alert-success" role="alert">
                     <i class="fas fa-check-circle mt-1"></i>
                     <span>Password reset successfully. You can now sign in with your new password.</span>
                 </div>
             <?php endif; ?>
 
             <?php if ($message): ?>
-                <div class="auth-alert alert alert-<?php echo htmlspecialchars($message_type); ?> alert-dismissible fade show" role="alert">
+                <div class="auth-alert auth-alert-popup alert alert-<?php echo htmlspecialchars($message_type); ?> alert-dismissible fade show" role="alert">
                     <i class="fas fa-<?php echo ($message_type === 'success') ? 'check-circle' : 'exclamation-circle'; ?> mt-1"></i>
                     <span><?php echo htmlspecialchars($message); ?></span>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -388,6 +413,21 @@ $reset_success = isset($_GET['reset']) && $_GET['reset'] === '1';
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Signing in\u2026';
             }
+        });
+
+        // Auto-dismiss popup alerts after a short delay.
+        document.querySelectorAll('.auth-alert-popup').forEach(function (alertEl) {
+            setTimeout(function () {
+                if (alertEl.classList.contains('show')) {
+                    if (window.bootstrap && bootstrap.Alert) {
+                        bootstrap.Alert.getOrCreateInstance(alertEl).close();
+                    } else {
+                        alertEl.remove();
+                    }
+                } else {
+                    alertEl.remove();
+                }
+            }, 4200);
         });
     </script>
 </body>

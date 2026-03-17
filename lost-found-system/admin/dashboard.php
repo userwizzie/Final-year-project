@@ -6,6 +6,11 @@ require_admin();
 $page_title = 'Admin Dashboard';
 require_once '../includes/header.php';
 
+$show_welcome = isset($_SESSION['just_logged_in']) && $_SESSION['just_logged_in'];
+if ($show_welcome) {
+    unset($_SESSION['just_logged_in']);
+}
+
 // gather some summary stats
 try {
     $stats = [];
@@ -28,6 +33,46 @@ try {
     $stats = [];
 }
 ?>
+
+<style>
+    .login-popup {
+        position: fixed;
+        top: 1rem;
+        left: 50%;
+        transform: translate(-50%, -140%);
+        z-index: 1080;
+        width: min(92vw, 700px);
+        border-radius: 1rem;
+        border: none;
+        box-shadow: 0 14px 36px rgba(13, 110, 253, 0.28);
+        animation: popupDropIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes popupDropIn {
+        from {
+            transform: translate(-50%, -150%);
+            opacity: 0;
+        }
+        to {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .login-popup {
+            top: 0.75rem;
+            width: calc(100vw - 1rem);
+        }
+    }
+</style>
+
+<?php if ($show_welcome): ?>
+    <div class="alert alert-info alert-dismissible fade show login-popup" role="alert">
+        <i class="fas fa-user-shield me-2"></i><strong>Welcome back!</strong> Admin session is active.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+<?php endif; ?>
 
 <h2 class="mb-4"><i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard</h2>
 

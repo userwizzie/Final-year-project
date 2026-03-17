@@ -227,11 +227,42 @@ $claims = $claim_stmt->fetchAll();
             padding: 2rem 1.5rem;
         }
     }
+
+    .login-popup {
+        position: fixed;
+        top: 1rem;
+        left: 50%;
+        transform: translate(-50%, -140%);
+        z-index: 1080;
+        width: min(92vw, 700px);
+        border-radius: 1rem;
+        border: none;
+        box-shadow: 0 14px 36px rgba(25, 135, 84, 0.28);
+        animation: popupDropIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes popupDropIn {
+        from {
+            transform: translate(-50%, -150%);
+            opacity: 0;
+        }
+        to {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .login-popup {
+            top: 0.75rem;
+            width: calc(100vw - 1rem);
+        }
+    }
 </style>
 
 <!-- Welcome Alert -->
 <?php if ($show_welcome): ?>
-    <div class="alert alert-success alert-dismissible fade show" role="alert" style="border-radius: 1rem; border: none; box-shadow: 0 4px 12px rgba(25,135,84,0.15);">
+    <div class="alert alert-success alert-dismissible fade show login-popup" role="alert">
         <i class="fas fa-check-circle me-2"></i><strong>Welcome back!</strong> You're now logged in, <?php echo htmlspecialchars($name); ?>.
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>

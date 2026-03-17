@@ -15,50 +15,110 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $new_status = $action === 'approve' ? 'approved' : 'rejected';
 
         try {
-            $claim_stmt = $conn->prepare("SELECT found_id FROM claims WHERE claim_id = ?");
+            $conn->beginTransaction();
+
+            $claim_stmt = $conn->prepare("
+                SELECT 
+                    c.claim_id,
+                    c.found_id,
+                    c.status,
+                    claimant.name AS claimant_name,
+                    claimant.email AS claimant_email,
+                    finder.name AS finder_name,
+                    finder.email AS finder_email
+                FROM claims c
+                LEFT JOIN users claimant ON c.user_id = claimant.user_id
+                LEFT JOIN found_items f ON c.found_id = f.found_id
+                LEFT JOIN users finder ON f.user_id = finder.user_id
+                WHERE c.claim_id = ?
+                LIMIT 1
+            ");
             $claim_stmt->execute([$claim_id]);
             $claim = $claim_stmt->fetch();
 
-            $conn->prepare("
-                UPDATE claims 
-                SET status = ?, admin_id = ? 
-                WHERE claim_id = ?
-            ")->execute([$new_status, $_SESSION['user_id'], $claim_id]);
+            if (!$claim) {
+                throw new RuntimeException("Claim not found.");
+            }
 
-            if ($action === 'approve' && $claim) {
-                $conn->prepare("
-                    UPDATE found_items 
-                    SET reward_status = 'rewarded', reward_points = 100 
-                    WHERE found_id = ?
-                ")->execute([$claim['found_id']]);
-
-                $message = "Claim #$claim_id approved! Finder rewarded 100 points.";
-
-                // notify claimant and finder
-                if (!empty($claim['claimant_email'])) {
-                    notify_user($claim['claimant_email'], 'Your claim was approved',
-                                "Hello {$claim['claimant_name']},\n\nYour claim (#$claim_id) has been approved.");
-                }
-                if (!empty($claim['finder_email'])) {
-                    notify_user($claim['finder_email'], 'Reward issued',
-                                "Hello {$claim['finder_name']},\n\nYour item claim was approved and 100 points have been awarded.");
-                }
-            } elseif ($action === 'reject' && $claim) {
-                // reset item status so others can claim again
-                $conn->prepare(
-                    "UPDATE found_items SET reward_status = NULL, reward_points = 0 WHERE found_id = ?"
-                )->execute([$claim['found_id']]);
-
-                $message = "Claim #$claim_id rejected and item released.";
-
-                if (!empty($claim['claimant_email'])) {
-                    notify_user($claim['claimant_email'], 'Your claim was rejected',
-                                "Hello {$claim['claimant_name']},\n\nYour claim (#$claim_id) has been rejected. Feel free to search again.");
-                }
+            if (($claim['status'] ?? '') !== 'pending') {
+                $conn->rollBack();
+                $message = "Claim #$claim_id has already been processed.";
             } else {
-                $message = "Claim #$claim_id $new_status.";
+                $conn->prepare("
+                    UPDATE claims 
+                    SET status = ?, admin_id = ? 
+                    WHERE claim_id = ?
+                ")->execute([$new_status, $_SESSION['user_id'], $claim_id]);
+
+                if ($action === 'approve') {
+                    $conn->prepare("
+                        UPDATE claims
+                        SET status = 'rejected', admin_id = ?
+                        WHERE found_id = ? AND claim_id <> ? AND status = 'pending'
+                    ")->execute([$_SESSION['user_id'], $claim['found_id'], $claim_id]);
+
+                    $conn->prepare("
+                        UPDATE found_items 
+                        SET reward_status = 'rewarded', reward_points = 100 
+                        WHERE found_id = ?
+                    ")->execute([$claim['found_id']]);
+
+                    $message = "Claim #$claim_id approved! Finder rewarded 100 points.";
+                } else {
+                    $pending_stmt = $conn->prepare("SELECT COUNT(*) FROM claims WHERE found_id = ? AND status = 'pending'");
+                    $pending_stmt->execute([$claim['found_id']]);
+                    $remaining_pending = (int)$pending_stmt->fetchColumn();
+
+                    if ($remaining_pending > 0) {
+                        $conn->prepare(
+                            "UPDATE found_items SET reward_status = 'claimed', reward_points = 0 WHERE found_id = ?"
+                        )->execute([$claim['found_id']]);
+                    } else {
+                        $conn->prepare(
+                            "UPDATE found_items SET reward_status = NULL, reward_points = 0 WHERE found_id = ?"
+                        )->execute([$claim['found_id']]);
+                    }
+
+                    $message = "Claim #$claim_id rejected.";
+                }
+
+                $conn->commit();
+
+                // Send notifications only after transaction success.
+                if ($action === 'approve') {
+                    if (!empty($claim['claimant_email'])) {
+                        notify_user(
+                            $claim['claimant_email'],
+                            'Your claim was approved',
+                            "Hello {$claim['claimant_name']},\n\nYour claim (#$claim_id) has been approved."
+                        );
+                    }
+                    if (!empty($claim['finder_email'])) {
+                        notify_user(
+                            $claim['finder_email'],
+                            'Reward issued',
+                            "Hello {$claim['finder_name']},\n\nYour item claim was approved and 100 points have been awarded."
+                        );
+                    }
+                } else {
+                    if (!empty($claim['claimant_email'])) {
+                        notify_user(
+                            $claim['claimant_email'],
+                            'Your claim was rejected',
+                            "Hello {$claim['claimant_name']},\n\nYour claim (#$claim_id) has been rejected. Feel free to search again."
+                        );
+                    }
+                }
             }
         } catch (PDOException $e) {
+            if ($conn->inTransaction()) {
+                $conn->rollBack();
+            }
+            $message = "Error: " . $e->getMessage();
+        } catch (RuntimeException $e) {
+            if ($conn->inTransaction()) {
+                $conn->rollBack();
+            }
             $message = "Error: " . $e->getMessage();
         }
     }
@@ -174,8 +234,9 @@ require_once '../includes/header.php';
                                     <?php if ($claim['status'] === 'pending'): ?>
                                         <form method="POST" class="d-inline-block">
                                             <input type="hidden" name="claim_id" value="<?= $claim['claim_id'] ?>">
-                                            <button type="submit" name="action" value="approve" class="btn btn-sm btn-success me-1">Approve</button>
-                                            <button type="submit" name="action" value="reject" class="btn btn-sm btn-danger">Reject</button>
+                                            <input type="hidden" name="action" value="">
+                                            <button type="submit" class="btn btn-sm btn-success me-1" onclick="this.form.action.value='approve';">Approve</button>
+                                            <button type="submit" class="btn btn-sm btn-danger" onclick="this.form.action.value='reject';">Reject</button>
                                         </form>
                                     <?php else: ?>
                                         <small>Processed</small>
