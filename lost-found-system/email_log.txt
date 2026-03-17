@@ -34,3 +34,11 @@ Your claim (#11) has been approved.
 [2026-03-17 08:36:10] To: mark@naru.com | Subject: Reward issued | Message: Hello Mark,
 
 Your item claim was approved and 100 points have been awarded.
+[2026-03-17 10:51:08] To: wilsonmagera6@gmail.com | Subject: Welcome to Lost & Found | Message: Hi Magera Wilson,
+
+Thank you for registering with the Lost & Found system at Kyambogo University.
+You may now log in and start reporting items.
+[2026-03-17 11:07:42] To: wiz@k.com | Subject: Welcome to Lost & Found | Message: Hi Magera Wilson,
+
+Thank you for registering with the Lost & Found system at Kyambogo University.
+You may now log in and start reporting items.

@@ -363,6 +363,51 @@ $signed_out = isset($_GET['logged_out']);
         }
         .auth-footer a:hover { text-decoration: underline; }
 
+        /* ── Celebration Screen ── */
+        .celebration-screen {
+            text-align: center;
+            padding: 2.2rem 1rem 1.6rem;
+            animation: fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        .celebrate-icon {
+            width: 84px; height: 84px;
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.2rem; color: #16a34a;
+            margin: 0 auto 1.1rem;
+            animation: celebPop 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+            box-shadow: 0 0 0 12px rgba(22,163,74,.10), 0 0 0 28px rgba(22,163,74,.05);
+        }
+        @keyframes celebPop {
+            from { transform: scale(0); opacity: 0; }
+            to   { transform: scale(1); opacity: 1; }
+        }
+        .celebrate-name { font-size: 1.4rem; font-weight: 800; color: #0f172a; margin-bottom: 0.35rem; letter-spacing: -0.02em; }
+        .celebrate-msg  { font-size: 0.93rem; color: #475569; margin-bottom: 1.5rem; }
+        .progress-wrap  { background: #e2e8f0; border-radius: 999px; height: 6px; overflow: hidden; }
+        .progress-fill  {
+            height: 100%; border-radius: 999px;
+            background: linear-gradient(90deg, #0d6efd, #0dcaf0);
+            animation: fillBar 3.2s linear forwards;
+        }
+        @keyframes fillBar { from { width: 0; } to { width: 100%; } }
+        .progress-label { font-size: 0.76rem; color: #94a3b8; margin-top: 0.5rem; }
+
+        /* ── Confetti ── */
+        .confetti-wrap {
+            position: fixed; inset: 0;
+            pointer-events: none; z-index: 2000; overflow: hidden;
+        }
+        .confetto {
+            position: absolute; top: -14px; border-radius: 3px; opacity: 0;
+            animation: confettiFall linear forwards;
+        }
+        @keyframes confettiFall {
+            0%   { opacity: 1; transform: translateY(-20px) rotate(0deg); }
+            100% { opacity: 0; transform: translateY(110vh) rotate(720deg); }
+        }
+
         @media (max-width: 480px) {
             body { padding: 0.75rem; }
             .auth-header { padding: 2rem 1.5rem 1.75rem; }
@@ -392,31 +437,59 @@ $signed_out = isset($_GET['logged_out']);
                 </div>
 
                 <div class="auth-body">
-                    <p class="auth-subtitle">Create your secure account</p>
-
-                    <?php if ($signed_out): ?>
-                        <div class="auth-alert alert alert-info" role="alert">
-                            <i class="fas fa-check-circle mt-1"></i>
-                            <span>You signed out successfully. Register a new account or sign back in.</span>
-                        </div>
-                    <?php endif; ?>
-
-                    <?php if ($message): ?>
-                        <div class="auth-alert alert alert-<?php echo htmlspecialchars($message_type, ENT_QUOTES, 'UTF-8'); ?> alert-dismissible fade show" role="alert">
-                            <i class="fas fa-<?php echo $success ? 'check-circle' : 'triangle-exclamation'; ?> mt-1"></i>
-                            <span><?php echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8'); ?></span>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    <?php endif; ?>
-
                     <?php if ($success): ?>
+                        <div class="confetti-wrap" id="confettiWrap"></div>
+                        <div class="celebration-screen">
+                            <div class="celebrate-icon"><i class="fas fa-check"></i></div>
+                            <h3 class="celebrate-name">You're in, <?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>!</h3>
+                            <p class="celebrate-msg">Your account is all set. Taking you to sign in&hellip;</p>
+                            <div class="progress-wrap"><div class="progress-fill"></div></div>
+                            <p class="progress-label">Redirecting in 3 seconds&hellip;</p>
+                        </div>
                         <script>
-                            setTimeout(function() {
-                                window.location.href = 'login.php?registered=1';
-                            }, 1800);
+                            (function () {
+                                var wrap   = document.getElementById('confettiWrap');
+                                var colors = ['#0d6efd','#16a34a','#f59e0b','#ef4444','#8b5cf6','#0dcaf0','#fb923c'];
+                                for (var i = 0; i < 56; i++) {
+                                    var el = document.createElement('div');
+                                    el.className = 'confetto';
+                                    el.style.cssText = [
+                                        'left:'  + (Math.random() * 100) + '%',
+                                        'width:' + (6 + Math.random() * 8) + 'px',
+                                        'height:'+ (8 + Math.random() * 12) + 'px',
+                                        'background:' + colors[Math.floor(Math.random() * colors.length)],
+                                        'border-radius:' + (Math.random() > 0.5 ? '50%' : '2px'),
+                                        'animation-duration:' + (2.2 + Math.random() * 2.4) + 's',
+                                        'animation-delay:'    + (Math.random() * 1.6) + 's'
+                                    ].join(';');
+                                    wrap.appendChild(el);
+                                }
+                                setTimeout(function () {
+                                    window.location.href = 'login.php?registered=1';
+                                }, 3200);
+                            })();
                         </script>
+                    <?php else: ?>
+                        <p class="auth-subtitle">Create your secure account</p>
+
+                        <?php if ($signed_out): ?>
+                            <div class="auth-alert alert alert-info" role="alert">
+                                <i class="fas fa-check-circle mt-1"></i>
+                                <span>You signed out successfully. Register a new account or sign back in.</span>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ($message): ?>
+                            <div class="auth-alert alert alert-<?php echo htmlspecialchars($message_type, ENT_QUOTES, 'UTF-8'); ?> alert-dismissible fade show" role="alert">
+                                <i class="fas fa-triangle-exclamation mt-1"></i>
+                                <span><?php echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8'); ?></span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        <?php endif; ?>
+
                     <?php endif; ?>
 
+                    <?php if (!$success): ?>
                     <form method="POST" action="" id="registerForm" novalidate>
                         <div class="mb-3">
                             <label class="form-label" for="name">Full Name</label>
@@ -498,6 +571,7 @@ $signed_out = isset($_GET['logged_out']);
                         </svg>
                         Continue with Google
                     </button>
+                    <?php endif; ?>
                 </div>
 
                 <div class="auth-footer">

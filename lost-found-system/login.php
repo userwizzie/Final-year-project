@@ -35,6 +35,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['email']          = $user['email'];
             $_SESSION['role']           = $user['role'] ?? 'admin';
             $_SESSION['just_logged_in'] = true;
+            if (!empty($_SESSION['pending_new_user'])) {
+                $_SESSION['new_user'] = true;
+                unset($_SESSION['pending_new_user']);
+            }
             header($_SESSION['role'] === 'admin' ? 'Location: admin/dashboard.php' : 'Location: dashboard.php');
             exit;
         } else {
@@ -43,8 +47,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$logged_out   = isset($_GET['logged_out']);
+$logged_out    = isset($_GET['logged_out']);
 $reset_success = isset($_GET['reset']) && $_GET['reset'] === '1';
+$registered    = isset($_GET['registered']) && $_GET['registered'] === '1';
+if ($registered && !is_logged_in()) {
+    $_SESSION['pending_new_user'] = true;
+} elseif (!$registered) {
+    unset($_SESSION['pending_new_user']);
+}
 ?>
 
 <!DOCTYPE html>
@@ -301,6 +311,14 @@ $reset_success = isset($_GET['reset']) && $_GET['reset'] === '1';
         <!-- Form body -->
         <div class="auth-body">
             <p class="auth-subtitle">Sign in to your account</p>
+
+            <?php if ($registered): ?>
+                <div class="auth-alert auth-alert-popup alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-party-horn mt-1"></i>
+                    <span><strong>Account created!</strong> Sign in below to get started.</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <?php endif; ?>
 
             <?php if ($logged_out): ?>
                 <div class="auth-alert auth-alert-popup alert alert-info" role="alert">

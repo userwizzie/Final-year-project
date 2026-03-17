@@ -165,7 +165,8 @@ require_once '../includes/header.php';
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <form method="POST" style="display: inline;">
                         <input type="hidden" name="user_id" id="deleteUserId">
-                        <button type="submit" name="delete_user" class="btn btn-danger">Delete</button>
+                        <input type="hidden" name="delete_user" value="">
+                        <button type="submit" class="btn btn-danger" onclick="this.form.elements['delete_user'].value='1';">Delete</button>
                     </form>
                 </div>
             </div>

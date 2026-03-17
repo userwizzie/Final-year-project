@@ -107,7 +107,8 @@ require_once '../includes/header.php';
                     <form method="POST" style="display: inline;">
                         <input type="hidden" name="item_id" id="deleteItemId">
                         <input type="hidden" name="item_type" id="deleteItemType">
-                        <button type="submit" name="delete_item" class="btn btn-danger">Delete</button>
+                        <input type="hidden" name="delete_item" value="">
+                        <button type="submit" class="btn btn-danger" onclick="this.form.elements['delete_item'].value='1';">Delete</button>
                     </form>
                 </div>
             </div>

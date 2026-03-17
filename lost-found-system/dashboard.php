@@ -15,6 +15,11 @@ if ($show_welcome) {
     unset($_SESSION['just_logged_in']);
 }
 
+$show_new_user_welcome = isset($_SESSION['new_user']) && $_SESSION['new_user'];
+if ($show_new_user_welcome) {
+    unset($_SESSION['new_user']);
+}
+
 $lost_stmt = $conn->prepare("
     SELECT lost_id, item_name, category, date_lost, location, description, image_path
     FROM lost_items WHERE user_id = ? ORDER BY date_lost DESC LIMIT 10
@@ -258,21 +263,127 @@ $claims = $claim_stmt->fetchAll();
             width: calc(100vw - 1rem);
         }
     }
+
+    /* ── New-user welcome modal ── */
+    .nuwm-header {
+        position: relative; overflow: hidden;
+        background: linear-gradient(135deg, #060f1e 0%, #0a3580 55%, #1573ff 100%);
+        padding: 2.6rem 1.5rem 2rem;
+        text-align: center; color: #fff;
+    }
+    .nuwm-confetti {
+        position: absolute; inset: 0;
+        pointer-events: none; overflow: hidden;
+    }
+    .nuwm-star-icon {
+        position: relative; z-index: 1;
+        width: 76px; height: 76px;
+        background: rgba(255,255,255,0.18);
+        border: 2px solid rgba(255,255,255,0.35);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 2rem; color: #fff;
+        margin: 0 auto 1rem;
+        animation: nuwmPop 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+    }
+    @keyframes nuwmPop {
+        from { transform: scale(0) rotate(-30deg); opacity: 0; }
+        to   { transform: scale(1) rotate(0deg);   opacity: 1; }
+    }
+    .nuwm-title { position: relative; z-index: 1; font-size: 1.28rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .nuwm-sub   { position: relative; z-index: 1; font-size: 0.85rem; color: rgba(255,255,255,0.75); margin: 0; }
+    .nuwm-step-icon {
+        width: 54px; height: 54px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.3rem; margin: 0 auto 0.55rem;
+    }
+    .nuwm-step-label { font-size: 0.79rem; color: #475569; font-weight: 500; line-height: 1.3; }
+    .confetto {
+        position: absolute; top: -10px; border-radius: 3px; opacity: 0;
+        animation: nuwmFall linear forwards;
+    }
+    @keyframes nuwmFall {
+        0%   { opacity: 1; transform: translateY(0)    rotate(0deg); }
+        100% { opacity: 0; transform: translateY(380px) rotate(540deg); }
+    }
 </style>
 
-<!-- Welcome Alert -->
-<?php if ($show_welcome): ?>
+<!-- Welcome Alert (returning users only) -->
+<?php if ($show_welcome && !$show_new_user_welcome): ?>
     <div class="alert alert-success alert-dismissible fade show login-popup" role="alert">
         <i class="fas fa-check-circle me-2"></i><strong>Welcome back!</strong> You're now logged in, <?php echo htmlspecialchars($name); ?>.
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 <?php endif; ?>
 
+<?php if ($show_new_user_welcome): ?>
+<!-- ─── New-user onboarding modal ─── -->
+<div class="modal fade" id="newUserModal" tabindex="-1" aria-modal="true" aria-labelledby="nuwmTitle">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border:none; border-radius:1rem; overflow:hidden; box-shadow:0 28px 56px rgba(5,28,74,.35);">
+            <div class="nuwm-header">
+                <div class="nuwm-confetti" id="nuwmConfetti"></div>
+                <div class="nuwm-star-icon"><i class="fas fa-star"></i></div>
+                <h4 class="nuwm-title" id="nuwmTitle">Welcome, <?= htmlspecialchars($name) ?>!</h4>
+                <p class="nuwm-sub">You've joined the KyU Lost &amp; Found community.</p>
+            </div>
+            <div class="modal-body p-4">
+                <p class="text-center text-muted small fw-semibold mb-3">Here's what you can do:</p>
+                <div class="row g-3 mb-4">
+                    <div class="col-4 text-center">
+                        <div class="nuwm-step-icon bg-warning bg-opacity-10">
+                            <i class="fas fa-exclamation-triangle text-warning"></i>
+                        </div>
+                        <div class="nuwm-step-label">Report a<br>Lost Item</div>
+                    </div>
+                    <div class="col-4 text-center">
+                        <div class="nuwm-step-icon bg-primary bg-opacity-10">
+                            <i class="fas fa-search text-primary"></i>
+                        </div>
+                        <div class="nuwm-step-label">Search<br>Found Items</div>
+                    </div>
+                    <div class="col-4 text-center">
+                        <div class="nuwm-step-icon bg-success bg-opacity-10">
+                            <i class="fas fa-hand-holding-heart text-success"></i>
+                        </div>
+                        <div class="nuwm-step-label">Claim<br>Your Item</div>
+                    </div>
+                </div>
+                <button class="btn btn-primary w-100 fw-semibold py-2" data-bs-dismiss="modal" style="border-radius:.8rem;">
+                    <i class="fas fa-rocket me-2"></i>Let's get started!
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        new bootstrap.Modal(document.getElementById('newUserModal'), { backdrop: 'static', keyboard: false }).show();
+        var wrap   = document.getElementById('nuwmConfetti');
+        var colors = ['#fff','#93c5fd','#86efac','#fde68a','#f9a8d4','#a5b4fc','#fdba74'];
+        for (var i = 0; i < 48; i++) {
+            var el = document.createElement('div');
+            el.className = 'confetto';
+            el.style.cssText = [
+                'left:'  + (Math.random() * 100) + '%',
+                'width:' + (4 + Math.random() * 7) + 'px',
+                'height:'+ (6 + Math.random() * 10) + 'px',
+                'background:' + colors[Math.floor(Math.random() * colors.length)],
+                'border-radius:' + (Math.random() > 0.5 ? '50%' : '2px'),
+                'animation-duration:' + (1.6 + Math.random() * 1.8) + 's',
+                'animation-delay:'    + (Math.random() * 1.2) + 's'
+            ].join(';');
+            wrap.appendChild(el);
+        }
+    });
+</script>
+<?php endif; ?>
+
 <!-- Dashboard Hero -->
 <div class="dashboard-hero">
     <div class="row align-items-center">
         <div class="col-lg-8">
-            <h1 class="display-5 fw-bold mb-2">Welcome back, <?php echo htmlspecialchars($name); ?>!</h1>
+            <h1 class="display-5 fw-bold mb-2"><?php echo htmlspecialchars($name); ?>'s Dashboard</h1>
             <p class="lead mb-0 opacity-85">Here's an overview of your reports, claims, and activity across the Lost & Found system.</p>
         </div>
         <div class="col-lg-4 text-lg-end d-none d-lg-block">
