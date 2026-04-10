@@ -88,8 +88,8 @@ $signed_out = isset($_GET['logged_out']);
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Font Awesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Local icon set -->
+    <link href="assets/css/local-icons.css" rel="stylesheet">
     <!-- Bootstrap 5 -->
     <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
@@ -212,18 +212,34 @@ $signed_out = isset($_GET['logged_out']);
         }
 
         .auth-alert {
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 0.86rem;
-            padding: 0.7rem 1rem;
-            border: none;
+            padding: 0.8rem 1rem;
+            border: 1px solid transparent;
             margin-bottom: 1rem;
             display: flex;
             align-items: flex-start;
             gap: 0.5rem;
+            border-left-width: 4px;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
         }
-        .auth-alert.alert-danger  { background: #fff0f0; color: #b91c1c; }
-        .auth-alert.alert-success { background: #f0fff5; color: #166534; }
-        .auth-alert.alert-info    { background: #eff8ff; color: #1d5f8a; }
+        .auth-alert.alert-danger  { background: #fff5f5; color: #b42318; border-color: rgba(180, 35, 24, 0.18); }
+        .auth-alert.alert-success { background: #f0fdf4; color: #166534; border-color: rgba(22, 101, 52, 0.16); }
+        .auth-alert.alert-info    { background: #eff6ff; color: #1d4ed8; border-color: rgba(29, 78, 216, 0.16); }
+        .auth-form-summary { display: none; margin-bottom: 1rem; }
+        .auth-inline-feedback {
+            display: none;
+            margin-top: 0.45rem;
+            font-size: 0.8rem;
+            color: #b42318;
+            font-weight: 600;
+        }
+        .auth-inline-feedback.show { display: block; }
+        .field-wrap .form-control.is-invalid {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 3px rgba(220,53,69,0.12) !important;
+            background: #fff;
+        }
         .auth-alert .btn-close {
             margin-left: auto;
             font-size: 0.68rem;
@@ -583,6 +599,7 @@ $signed_out = isset($_GET['logged_out']);
 </div>
 
 <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/auth-feedback.js"></script>
 <script>
     // Enable tooltip for strong password hint
     document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
@@ -606,12 +623,52 @@ $signed_out = isset($_GET['logged_out']);
     wirePasswordToggle('password', 'togglePassword', 'togglePasswordIcon');
     wirePasswordToggle('confirm_password', 'toggleConfirmPassword', 'toggleConfirmPasswordIcon');
 
-    // Prevent accidental double-submit
-    document.getElementById('registerForm')?.addEventListener('submit', function () {
-        const btn = document.getElementById('registerBtn');
-        if (btn) {
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating account...';
+    AuthFeedback.attachValidation({
+        formId: 'registerForm',
+        summaryMessage: 'Please correct the highlighted fields before creating your account.',
+        rules: [
+            {
+                field: 'name',
+                test: value => value.trim().length >= 2,
+                message: 'Enter your full name.'
+            },
+            {
+                field: 'email',
+                test: value => value.trim() !== '',
+                message: 'Email address is required.'
+            },
+            {
+                field: 'email',
+                test: value => value.trim() === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim()),
+                message: 'Enter a valid email address.'
+            },
+            {
+                field: 'phone',
+                test: value => value.trim() === '' || /^[0-9+\-\s()]{7,20}$/.test(value.trim()),
+                message: 'Enter a valid phone number or leave it empty.'
+            },
+            {
+                field: 'password',
+                test: value => value.length >= 8,
+                message: 'Password must be at least 8 characters long.'
+            },
+            {
+                field: 'confirm_password',
+                test: value => value !== '',
+                message: 'Please confirm your password.'
+            },
+            {
+                field: 'confirm_password',
+                test: value => value === document.getElementById('password').value,
+                message: 'Passwords do not match.'
+            }
+        ],
+        onValidSubmit: function () {
+            const btn = document.getElementById('registerBtn');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating account...';
+            }
         }
     });
 </script>

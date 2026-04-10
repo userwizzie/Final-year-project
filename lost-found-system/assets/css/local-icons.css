@@ -1,0 +1,121 @@
+/* Local icon fallback set for offline-friendly UI */
+:where(.fa, .fas, .far, .fab) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1em;
+    line-height: 1;
+    font-style: normal;
+    text-rendering: geometricPrecision;
+}
+
+:where(.fa, .fas, .far, .fab)::before {
+    content: var(--lf-icon, "•");
+    font-family: "Segoe UI Symbol", "Segoe UI Emoji", sans-serif;
+    font-size: 1em;
+    line-height: 1;
+    font-style: normal;
+}
+
+.fa-2x { font-size: 2em; }
+.fa-spin { animation: lf-icon-spin 1s linear infinite; }
+
+@keyframes lf-icon-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.fa-align-left { --lf-icon: "☰"; }
+.fa-arrow-left { --lf-icon: "←"; }
+.fa-arrow-right { --lf-icon: "→"; }
+.fa-bolt { --lf-icon: "⚡"; }
+.fa-box { --lf-icon: "▣"; }
+.fa-boxes { --lf-icon: "▦"; }
+.fa-box-open { --lf-icon: "▤"; }
+.fa-briefcase { --lf-icon: "💼"; }
+.fa-calendar,
+.fa-calendar-days { --lf-icon: "🗓"; }
+.fa-camera { --lf-icon: "📷"; }
+.fa-certificate { --lf-icon: "◈"; }
+.fa-chart-bar { --lf-icon: "▮"; }
+.fa-chart-line { --lf-icon: "📈"; }
+.fa-check,
+.fa-check-circle,
+.fa-circle-check,
+.fa-file-check { --lf-icon: "✓"; }
+.fa-circle-exclamation,
+.fa-exclamation-circle,
+.fa-exclamation-triangle,
+.fa-triangle-exclamation { --lf-icon: "⚠"; }
+.fa-circle-info { --lf-icon: "ℹ"; }
+.fa-circle-xmark,
+.fa-xmark { --lf-icon: "✕"; }
+.fa-clipboard-check { --lf-icon: "☑"; }
+.fa-clipboard-list { --lf-icon: "☰"; }
+.fa-clock,
+.fa-history { --lf-icon: "⏱"; }
+.fa-code { --lf-icon: "</>"; }
+.fa-cog,
+.fa-users-cog { --lf-icon: "⚙"; }
+.fa-compass { --lf-icon: "🧭"; }
+.fa-copyright { --lf-icon: "©"; }
+.fa-download { --lf-icon: "⭳"; }
+.fa-ellipsis { --lf-icon: "⋯"; }
+.fa-envelope { --lf-icon: "✉"; }
+.fa-eye { --lf-icon: "◉"; }
+.fa-eye-slash { --lf-icon: "⊘"; }
+.fa-facebook { --lf-icon: "f"; }
+.fa-face-frown-open { --lf-icon: "☹"; }
+.fa-filter { --lf-icon: "⏷"; }
+.fa-gift { --lf-icon: "🎁"; }
+.fa-hand-holding-heart,
+.fa-heart { --lf-icon: "♥"; }
+.fa-handshake { --lf-icon: "🤝"; }
+.fa-home { --lf-icon: "⌂"; }
+.fa-id-card { --lf-icon: "🪪"; }
+.fa-image { --lf-icon: "🖼"; }
+.fa-inbox { --lf-icon: "🗂"; }
+.fa-instagram { --lf-icon: "◎"; }
+.fa-key { --lf-icon: "🔑"; }
+.fa-laptop { --lf-icon: "💻"; }
+.fa-lightbulb { --lf-icon: "💡"; }
+.fa-linkedin { --lf-icon: "in"; }
+.fa-list { --lf-icon: "☷"; }
+.fa-location-dot,
+.fa-map-marker-alt { --lf-icon: "⌖"; }
+.fa-lock,
+.fa-shield-alt,
+.fa-shield-heart,
+.fa-user-shield { --lf-icon: "🔒"; }
+.fa-magnifying-glass,
+.fa-search,
+.fa-search-plus,
+.fa-search-location,
+.fa-magnifying-glass-location { --lf-icon: "⌕"; }
+.fa-mobile-screen-button { --lf-icon: "📱"; }
+.fa-paper-plane { --lf-icon: "➤"; }
+.fa-party-horn { --lf-icon: "🎉"; }
+.fa-pen-to-square { --lf-icon: "✎"; }
+.fa-phone { --lf-icon: "☎"; }
+.fa-plus,
+.fa-plus-circle,
+.fa-user-plus { --lf-icon: "+"; }
+.fa-redo,
+.fa-rotate-left { --lf-icon: "↺"; }
+.fa-right-to-bracket,
+.fa-sign-in-alt { --lf-icon: "⇥"; }
+.fa-rocket { --lf-icon: "🚀"; }
+.fa-search-location { --lf-icon: "⌕"; }
+.fa-shirt { --lf-icon: "👕"; }
+.fa-sign-out-alt { --lf-icon: "⇤"; }
+.fa-spinner { --lf-icon: "◌"; }
+.fa-star,
+.fa-trophy { --lf-icon: "★"; }
+.fa-tachometer-alt { --lf-icon: "◔"; }
+.fa-tags { --lf-icon: "🏷"; }
+.fa-twitter { --lf-icon: "𝕏"; }
+.fa-university { --lf-icon: "🏛"; }
+.fa-user,
+.fa-user-circle,
+.fa-users { --lf-icon: "👤"; }
+.fa-wallet { --lf-icon: "👛"; }

@@ -71,8 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="icon" type="image/png" sizes="96x96" href="assets/images/favicon-96x96.png?v=20260317">
     <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png?v=20260317">
     <link rel="manifest" href="assets/images/site.webmanifest?v=20260317">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Removed Google Fonts CDN, using local Inter font -->
+    <link href="assets/css/local-icons.css" rel="stylesheet">
     <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; }
@@ -143,12 +143,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .auth-hint { font-size: 0.84rem; color: #64748b; margin-bottom: 1.4rem; line-height: 1.5; }
 
         .auth-alert {
-            border-radius: 10px; font-size: 0.86rem; padding: 0.7rem 1rem;
-            border: none; margin-bottom: 1.2rem;
+            border-radius: 12px; font-size: 0.86rem; padding: 0.8rem 1rem;
+            border: 1px solid transparent; margin-bottom: 1.2rem;
             display: flex; align-items: flex-start; gap: 0.5rem;
+            border-left-width: 4px;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
         }
-        .auth-alert.alert-danger  { background: #fff0f0; color: #b91c1c; }
-        .auth-alert.alert-success { background: #f0fff5; color: #166534; }
+        .auth-alert.alert-danger  { background: #fff5f5; color: #b42318; border-color: rgba(180, 35, 24, 0.18); }
+        .auth-alert.alert-success { background: #f0fdf4; color: #166534; border-color: rgba(22, 101, 52, 0.16); }
+        .auth-alert.alert-info    { background: #eff6ff; color: #1d4ed8; border-color: rgba(29, 78, 216, 0.16); }
+        .auth-form-summary { display: none; margin-bottom: 1rem; }
+        .auth-inline-feedback {
+            display: none;
+            margin-top: 0.45rem;
+            font-size: 0.8rem;
+            color: #b42318;
+            font-weight: 600;
+        }
+        .auth-inline-feedback.show { display: block; }
+        .field-wrap .form-control.is-invalid {
+            border-color: #dc3545 !important;
+            box-shadow: 0 0 0 3px rgba(220,53,69,0.12) !important;
+            background: #fff;
+        }
 
         .form-label { font-size: 0.81rem; font-weight: 600; color: #475569; margin-bottom: 0.4rem;
                       letter-spacing: 0.03em; display: block; }
@@ -251,12 +268,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/auth-feedback.js"></script>
     <script>
-        document.getElementById('forgotForm')?.addEventListener('submit', function () {
-            const btn = document.getElementById('submitBtn');
-            if (btn) {
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending…';
+        AuthFeedback.attachValidation({
+            formId: 'forgotForm',
+            summaryMessage: 'Please enter a valid email address to continue.',
+            rules: [
+                {
+                    field: 'email',
+                    test: value => value.trim() !== '',
+                    message: 'Email address is required.'
+                },
+                {
+                    field: 'email',
+                    test: value => value.trim() === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim()),
+                    message: 'Enter a valid email address.'
+                }
+            ],
+            onValidSubmit: function () {
+                const btn = document.getElementById('submitBtn');
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending…';
+                }
             }
         });
     </script>

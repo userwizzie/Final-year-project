@@ -33,11 +33,11 @@ $favicon_version  = file_exists(__DIR__ . '/../assets/images/favicon.svg')
     <link rel="apple-touch-icon" sizes="180x180" href="<?php echo $base_path; ?>assets/images/apple-touch-icon.png?v=<?php echo $favicon_version; ?>">
     <link rel="manifest" href="<?php echo $base_path; ?>assets/images/site.webmanifest?v=<?php echo $favicon_version; ?>">
 
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Local Inter font (offline) -->
+    <link href="<?php echo $base_path; ?>assets/css/inter-font.css" rel="stylesheet">
 
-    <!-- Font Awesome 6 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Local icon set -->
+    <link href="<?php echo $base_path; ?>assets/css/local-icons.css" rel="stylesheet">
 
     <!-- Bootstrap 5 CSS -->
     <link href="<?php echo $base_path; ?>assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">

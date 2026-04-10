@@ -93,8 +93,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $item && empty($message)) {
     <link rel="apple-touch-icon" sizes="180x180" href="assets/images/apple-touch-icon.png?v=20260317">
     <link rel="manifest" href="assets/images/site.webmanifest?v=20260317">
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Removed Google Fonts CDN, using local Inter font -->
+    <link href="assets/css/local-icons.css" rel="stylesheet">
     <link href="assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
 

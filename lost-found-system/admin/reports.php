@@ -167,7 +167,7 @@ $page_title = 'Reports - Admin';
 require_once '../includes/header.php';
 ?>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="../assets/js/chart.umd.min.js"></script>
 <style>
     .chart-container { position: relative; height: 300px; }
 </style>
